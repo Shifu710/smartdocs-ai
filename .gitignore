@@ -1,6 +1,7 @@
 # Dependencies
 node_modules/
 .venv/
+.venv*/
 __pycache__/
 .pytest_cache/
 .ruff_cache/
@@ -23,3 +24,4 @@ Thumbs.db
 .vscode/
 
 .vercel
+.env*

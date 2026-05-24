@@ -1,7 +1,19 @@
 from functools import lru_cache
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+def normalize_asyncpg_query(value: str) -> str:
+    """Keep Neon/Postgres URLs compatible with asyncpg."""
+    split_url = urlsplit(value)
+    query = dict(parse_qsl(split_url.query, keep_blank_values=True))
+    query.pop("channel_binding", None)
+    if query.get("sslmode") == "require":
+        query["ssl"] = "require"
+        query.pop("sslmode", None)
+    return urlunsplit((split_url.scheme, split_url.netloc, split_url.path, urlencode(query), split_url.fragment))
 
 
 class Settings(BaseSettings):
@@ -25,6 +37,15 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
         extra="ignore",
     )
+
+    @field_validator("database_url")
+    @classmethod
+    def normalize_database_url(cls, value: str) -> str:
+        if value.startswith("postgres://"):
+            value = "postgresql://" + value.removeprefix("postgres://")
+        if value.startswith("postgresql://"):
+            value = "postgresql+asyncpg://" + value.removeprefix("postgresql://")
+        return normalize_asyncpg_query(value)
 
     @field_validator("cors_origins_raw")
     @classmethod
