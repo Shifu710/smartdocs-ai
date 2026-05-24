@@ -2,7 +2,7 @@
 
 Date tested: 2026-05-25
 Deployment URL: https://smartdocs-ai-three.vercel.app
-Commit SHA: 1be308c
+Commit SHA tested: 9e90eac
 Tester: Codex
 
 ## Route Checklist
