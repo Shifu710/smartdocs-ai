@@ -103,11 +103,11 @@ export default function WorkspaceDashboardPage() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Phase 1 status</CardTitle>
+                <CardTitle>Product flow</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-3 text-sm text-muted-foreground">
-                <p>Authentication, JWT protection, workspace isolation, and role-aware dashboard access are wired.</p>
-                <p>Document upload, LangGraph RAG, billing, and observability land in later phases from the spec.</p>
+                <p>Documents, chunk indexing, RAG chat, citations, retrieval debug data, credits, and usage logs are wired.</p>
+                <p>The demo-local provider is labeled in answers and usage logs until real DeepSeek or Qwen keys are configured.</p>
               </CardContent>
             </Card>
           </section>
