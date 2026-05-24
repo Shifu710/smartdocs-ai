@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowRight, KeyRound, UserRound } from "lucide-react";
+import { ArrowRight, KeyRound, LockKeyhole, UserRound } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -11,7 +11,7 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { guestLogin, login, storeSession } from "@/lib/api";
+import { login, storeSession } from "@/lib/api";
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -23,7 +23,6 @@ type LoginForm = z.infer<typeof loginSchema>;
 export default function LoginPage() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
-  const [guestLoading, setGuestLoading] = useState(false);
   const form = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -43,20 +42,6 @@ export default function LoginPage() {
     }
   }
 
-  async function tryGuestDemo() {
-    setError(null);
-    setGuestLoading(true);
-    try {
-      const session = await guestLogin();
-      storeSession(session);
-      router.push("/workspaces");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Guest login failed");
-    } finally {
-      setGuestLoading(false);
-    }
-  }
-
   return (
     <main className="flex min-h-screen items-center justify-center px-4 py-8">
       <div className="grid w-full max-w-5xl gap-6 lg:grid-cols-[1fr_420px]">
@@ -67,8 +52,16 @@ export default function LoginPage() {
             </div>
             <h1 className="text-4xl font-semibold tracking-normal text-foreground md:text-5xl">SmartDocs AI</h1>
             <p className="mt-4 text-lg leading-8 text-muted-foreground">
-              Secure workspace knowledge bases with RBAC, credits, hybrid retrieval, citations, and AI usage visibility.
+              Secure workspace knowledge bases with RBAC, credits, retrieval, citations, and AI usage visibility.
             </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Link href="/" className="text-sm font-medium text-primary">
+                Product overview
+              </Link>
+              <Link href="/technical-review" className="text-sm font-medium text-primary">
+                Technical review
+              </Link>
+            </div>
           </div>
         </section>
 
@@ -95,14 +88,30 @@ export default function LoginPage() {
             </form>
 
             <div className="mt-4 grid gap-3">
-              <Button type="button" variant="secondary" onClick={tryGuestDemo} disabled={guestLoading}>
+              <Button type="button" variant="secondary" onClick={() => router.push("/demo")}>
                 <UserRound className="h-4 w-4" aria-hidden="true" />
-                {guestLoading ? "Opening demo..." : "Try guest demo"}
+                Try guest demo
               </Button>
               <Link href="/register" className="inline-flex items-center gap-2 text-sm font-medium text-primary">
                 Create account
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </Link>
+            </div>
+
+            <div className="mt-5 grid gap-3 rounded-md border border-border bg-muted p-4 text-sm">
+              <div className="flex items-center gap-2 font-medium">
+                <LockKeyhole className="h-4 w-4 text-primary" aria-hidden="true" />
+                Demo accounts
+              </div>
+              <div className="grid gap-2 text-muted-foreground">
+                <p>
+                  <span className="font-medium text-foreground">Owner:</span> demo@smartdocs.ai / demo12345
+                </p>
+                <p>
+                  <span className="font-medium text-foreground">Guest reviewer:</span> guest@smartdocs.ai / guest123
+                </p>
+                <p>Guest access is read-only: ask questions and inspect citations without upload, delete, re-index, or settings actions.</p>
+              </div>
             </div>
           </CardContent>
         </Card>

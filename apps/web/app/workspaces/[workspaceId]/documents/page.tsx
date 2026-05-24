@@ -10,7 +10,7 @@ import { AppShell } from "@/components/app-shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getAccessToken, listDocuments, uploadDocument } from "@/lib/api";
+import { getAccessToken, getWorkspaceDashboard, listDocuments, uploadDocument } from "@/lib/api";
 
 export default function DocumentsPage() {
   const params = useParams<{ workspaceId: string }>();
@@ -30,6 +30,15 @@ export default function DocumentsPage() {
     queryFn: () => listDocuments(workspaceId),
     enabled: Boolean(workspaceId) && Boolean(getAccessToken())
   });
+
+  const dashboardQuery = useQuery({
+    queryKey: ["workspace-dashboard", workspaceId],
+    queryFn: () => getWorkspaceDashboard(workspaceId),
+    enabled: Boolean(workspaceId) && Boolean(getAccessToken())
+  });
+
+  const role = dashboardQuery.data?.workspace.role;
+  const canUpload = role === "owner" || role === "admin" || role === "member";
 
   const uploadMutation = useMutation({
     mutationFn: (file: File) => uploadDocument(workspaceId, file),
@@ -56,11 +65,17 @@ export default function DocumentsPage() {
             <h2 className="text-xl font-semibold">Knowledge base</h2>
             <p className="mt-1 text-sm text-muted-foreground">Upload PDF, DOCX, TXT, or Markdown files for indexing.</p>
           </div>
-          <label className="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90">
-            <Upload className="h-4 w-4" aria-hidden="true" />
-            Upload
-            <input className="sr-only" type="file" accept=".pdf,.docx,.txt,.md" onChange={onFileChange} />
-          </label>
+          {canUpload ? (
+            <label className="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90">
+              <Upload className="h-4 w-4" aria-hidden="true" />
+              Upload
+              <input className="sr-only" type="file" accept=".pdf,.docx,.txt,.md" onChange={onFileChange} />
+            </label>
+          ) : (
+            <div className="rounded-md border border-border bg-muted px-4 py-3 text-sm text-muted-foreground">
+              Guest demo is read-only. Upload and document changes are disabled for this role.
+            </div>
+          )}
         </section>
 
         {error ? <p className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</p> : null}

@@ -1,59 +1,180 @@
+import { ArrowRight, CheckCircle2, Database, GitBranch, LockKeyhole, Server, ShieldCheck, WalletCards } from "lucide-react";
+import Link from "next/link";
+
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+const proofPoints = [
+  "Guest demo login finds the seeded SmartDocs workspace and opens the dashboard.",
+  "Four seeded documents are indexed and available for cited RAG answers.",
+  "Chat streams tokens, returns citations, exposes retrieval debug data, and records provider metadata.",
+  "Successful calls deduct credits and create usage records; failed calls do not deduct credits.",
+  "Viewer roles can read and ask questions, while write controls are hidden from the UI."
+];
+
+const codeLinks = [
+  "services/api/app/services/chat_service.py",
+  "services/api/app/services/retrieval_service.py",
+  "services/api/app/services/document_service.py",
+  "services/api/app/services/credit_service.py",
+  "services/api/app/routes/chat.py",
+  "services/api/app/routes/admin.py",
+  "apps/web/app/demo/page.tsx",
+  "apps/web/app/workspaces/[workspaceId]/chat/page.tsx",
+  "apps/web/app/workspaces/[workspaceId]/usage/page.tsx"
+];
+
+const reviewSections = [
+  {
+    title: "Document Indexing",
+    icon: Database,
+    body: "Uploads are stored per workspace, parsed into text, split into chunks, and persisted with document metadata. The demo seed endpoint creates review-ready documents so the public deployment can be tested without manual setup."
+  },
+  {
+    title: "RAG Retrieval",
+    icon: GitBranch,
+    body: "The chat flow retrieves workspace-scoped chunks, ranks source evidence, and returns citations with document names, chunk ids, previews, and rank/debug fields. The architecture is ready for pgvector-backed retrieval and hybrid rank fusion."
+  },
+  {
+    title: "Model Gateway",
+    icon: Server,
+    body: "The no-key production path is explicitly labeled demo-local. The backend is structured so real DeepSeek, Qwen, or OpenAI-compatible model calls can replace deterministic demo answers through environment configuration."
+  },
+  {
+    title: "RBAC",
+    icon: ShieldCheck,
+    body: "Workspace roles are returned with dashboard data and used by the UI to hide upload, re-index, invite, and settings actions from guest/viewer sessions."
+  },
+  {
+    title: "Credits",
+    icon: WalletCards,
+    body: "Credit deduction happens after a successful AI response and is written alongside usage logs. This keeps billing visible and prevents failed model calls from consuming balance."
+  },
+  {
+    title: "Tenant Isolation",
+    icon: LockKeyhole,
+    body: "Every workspace route and API request is scoped by workspace id. Documents, chunks, credits, members, settings, and usage records are tenant-owned surfaces."
+  }
+];
 
 export default function TechnicalReviewPage() {
   return (
-    <main className="mx-auto grid min-h-screen max-w-5xl gap-6 px-4 py-10">
-      <section>
-        <h1 className="text-3xl font-semibold">SmartDocs AI Technical Review</h1>
-        <p className="mt-3 max-w-3xl text-sm leading-6 text-muted-foreground">
-          Enterprise RAG SaaS with Next.js, FastAPI, PostgreSQL/pgvector, Redis/Celery, LangGraph-style pipeline,
-          citations, workspace isolation, credit billing, usage logs, and a clearly labeled demo-local provider.
-        </p>
-      </section>
+    <main className="min-h-screen bg-background">
+      <header className="border-b border-border bg-card">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
+          <Link href="/" className="font-semibold">
+            SmartDocs AI
+          </Link>
+          <Link href="/demo" className="inline-flex items-center gap-2 text-sm font-medium text-primary">
+            Try guest demo
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </Link>
+        </div>
+      </header>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Architecture</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <pre className="overflow-x-auto rounded-md bg-muted p-4 text-xs leading-6">
+      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10">
+        <section className="max-w-4xl">
+          <Badge tone="muted">Technical review</Badge>
+          <h1 className="mt-4 text-3xl font-semibold md:text-5xl">SmartDocs AI Enterprise RAG SaaS</h1>
+          <p className="mt-4 text-base leading-7 text-muted-foreground">
+            This page is written for a reviewer evaluating product depth and engineering execution. It summarizes the
+            live demo, architecture, security boundaries, billing behavior, limitations, and source files worth reading.
+          </p>
+        </section>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Architecture</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <pre className="overflow-x-auto rounded-md bg-muted p-4 text-xs leading-6">
 {`flowchart LR
   Web[Next.js App Router] --> API[FastAPI API]
-  API --> Auth[JWT Auth + RBAC]
+  API --> Auth[JWT Auth + Workspace RBAC]
   API --> Docs[Document Service]
   Docs --> Storage[/uploads volume]
-  Docs --> Worker[Celery Worker]
-  Worker --> Chunks[PostgreSQL + pgvector chunks]
-  API --> RAG[LangGraph RAG Pipeline]
-  RAG --> Retrieval[Hybrid Retrieval + RRF]
-  RAG --> Gateway[DeepSeek/Qwen/OpenAI Gateway or demo-local]
-  RAG --> Billing[Atomic Credits + Usage Logs]
+  Docs --> Worker[Indexing path]
+  Worker --> Chunks[(PostgreSQL document chunks)]
+  API --> Chat[Streaming Chat Route]
+  Chat --> Retrieval[Workspace-scoped retrieval]
+  Chat --> Gateway[Model Gateway or demo-local]
+  Chat --> Billing[Credits + Usage Logs]
   Billing --> DB[(PostgreSQL)]`}
-          </pre>
-        </CardContent>
-      </Card>
-
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Implemented Flow</CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm leading-6 text-muted-foreground">
-            Guest demo login enters the seeded workspace, shows four indexed documents, streams a RAG answer,
-            displays citations and retrieval debug data, deducts credits after success, and records a usage log.
+            </pre>
           </CardContent>
         </Card>
+
+        <section className="grid gap-4 lg:grid-cols-[0.8fr_1.2fr]">
+          <Card>
+            <CardHeader>
+              <CardTitle>What to verify live</CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-3">
+              {proofPoints.map((point) => (
+                <div key={point} className="flex gap-2 text-sm leading-6 text-muted-foreground">
+                  <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-green-600" aria-hidden="true" />
+                  <span>{point}</span>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            {reviewSections.map((section) => {
+              const Icon = section.icon;
+              return (
+                <Card key={section.title}>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-base">
+                      <Icon className="h-4 w-4 text-primary" aria-hidden="true" />
+                      {section.title}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="text-sm leading-6 text-muted-foreground">{section.body}</CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="grid gap-4 md:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>Request flow</CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-3 text-sm leading-6 text-muted-foreground">
+              <p>1. The browser authenticates with JWT and sends workspace-scoped API requests.</p>
+              <p>2. FastAPI checks the workspace membership and role before returning tenant data.</p>
+              <p>3. Chat streams answer tokens through server-sent events, then sends the final citations and usage metadata.</p>
+              <p>4. Credits and usage logs are written only after the answer is complete.</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Known limitations</CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-3 text-sm leading-6 text-muted-foreground">
+              <p>The public demo uses a deterministic demo-local provider when external model keys are absent.</p>
+              <p>The current review build focuses on product flow; deeper LangGraph orchestration and Langfuse tracing are documented upgrade points.</p>
+              <p>Settings and invites are intentionally read-only in the public demo to avoid mutation risk on the shared deployment.</p>
+            </CardContent>
+          </Card>
+        </section>
+
         <Card>
           <CardHeader>
-            <CardTitle>Provider Notes</CardTitle>
+            <CardTitle>Source files to review</CardTitle>
           </CardHeader>
-          <CardContent className="text-sm leading-6 text-muted-foreground">
-            The current no-key path is labeled demo-local in the UI and logs. Configure DeepSeek and Qwen keys in the
-            backend environment to swap deterministic demo responses for real model calls.
+          <CardContent className="grid gap-2 text-sm text-muted-foreground md:grid-cols-2">
+            {codeLinks.map((path) => (
+              <code key={path} className="rounded-md border border-border bg-muted px-3 py-2">
+                {path}
+              </code>
+            ))}
           </CardContent>
         </Card>
       </div>
     </main>
   );
 }
-

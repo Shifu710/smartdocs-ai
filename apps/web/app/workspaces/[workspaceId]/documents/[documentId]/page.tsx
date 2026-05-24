@@ -10,7 +10,7 @@ import { AppShell } from "@/components/app-shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getAccessToken, getDocument, reindexDocument } from "@/lib/api";
+import { getAccessToken, getDocument, getWorkspaceDashboard, reindexDocument } from "@/lib/api";
 
 export default function DocumentDetailPage() {
   const params = useParams<{ workspaceId: string; documentId: string }>();
@@ -30,12 +30,20 @@ export default function DocumentDetailPage() {
     enabled: Boolean(workspaceId) && Boolean(documentId) && Boolean(getAccessToken())
   });
 
+  const dashboardQuery = useQuery({
+    queryKey: ["workspace-dashboard", workspaceId],
+    queryFn: () => getWorkspaceDashboard(workspaceId),
+    enabled: Boolean(workspaceId) && Boolean(getAccessToken())
+  });
+
   const reindexMutation = useMutation({
     mutationFn: () => reindexDocument(workspaceId, documentId),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["document", workspaceId, documentId] })
   });
 
   const document = documentQuery.data;
+  const role = dashboardQuery.data?.workspace.role;
+  const canReindex = role === "owner" || role === "admin";
 
   return (
     <AppShell title={document?.original_filename ?? "Document"} workspaceId={workspaceId}>
@@ -58,10 +66,16 @@ export default function DocumentDetailPage() {
                   {document.file_hash.slice(0, 12)}
                 </p>
               </div>
-              <Button type="button" variant="secondary" onClick={() => reindexMutation.mutate()}>
-                <RefreshCcw className="h-4 w-4" aria-hidden="true" />
-                Re-index
-              </Button>
+              {canReindex ? (
+                <Button type="button" variant="secondary" onClick={() => reindexMutation.mutate()}>
+                  <RefreshCcw className="h-4 w-4" aria-hidden="true" />
+                  Re-index
+                </Button>
+              ) : (
+                <div className="rounded-md border border-border bg-muted px-4 py-3 text-sm text-muted-foreground">
+                  Read-only access. Re-index is disabled for this role.
+                </div>
+              )}
             </section>
 
             <Card>
