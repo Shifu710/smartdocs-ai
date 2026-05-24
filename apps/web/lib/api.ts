@@ -75,6 +75,8 @@ export type Citation = {
   preview: string;
   vector_rank?: number | null;
   keyword_rank?: number | null;
+  vector_distance?: number | null;
+  keyword_score?: number | null;
 };
 
 export type ChatFinal = {
@@ -112,6 +114,7 @@ export type CreditTransaction = {
   transaction_type: string;
   amount: number;
   balance_after: number;
+  transaction_metadata: Record<string, unknown>;
   created_at: string;
 };
 

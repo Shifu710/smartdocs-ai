@@ -2,7 +2,7 @@
 
 import { Activity, Coins, Gauge, XCircle } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { AppShell } from "@/components/app-shell";
@@ -21,6 +21,9 @@ export default function UsagePage() {
   const params = useParams<{ workspaceId: string }>();
   const workspaceId = params.workspaceId;
   const router = useRouter();
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [providerFilter, setProviderFilter] = useState("all");
+  const [operationFilter, setOperationFilter] = useState("all");
 
   useEffect(() => {
     if (!getAccessToken()) {
@@ -32,6 +35,17 @@ export default function UsagePage() {
     queryKey: ["usage", workspaceId],
     queryFn: () => getUsage(workspaceId),
     enabled: Boolean(workspaceId) && Boolean(getAccessToken())
+  });
+
+  const logs = useMemo(() => usageQuery.data?.logs ?? [], [usageQuery.data?.logs]);
+  const providers = useMemo(() => Array.from(new Set(logs.map((log) => log.provider).filter(Boolean))) as string[], [logs]);
+  const operations = useMemo(() => Array.from(new Set(logs.map((log) => log.operation_type))), [logs]);
+  const filteredLogs = logs.filter((log) => {
+    return (
+      (statusFilter === "all" || log.status === statusFilter) &&
+      (providerFilter === "all" || log.provider === providerFilter) &&
+      (operationFilter === "all" || log.operation_type === operationFilter)
+    );
   });
 
   return (
@@ -58,7 +72,42 @@ export default function UsagePage() {
           <CardHeader>
             <CardTitle>Usage logs</CardTitle>
           </CardHeader>
-          <CardContent className="overflow-x-auto">
+          <CardContent className="grid gap-4 overflow-x-auto">
+            <div className="flex flex-wrap gap-3">
+              <select
+                value={statusFilter}
+                onChange={(event) => setStatusFilter(event.target.value)}
+                className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+              >
+                <option value="all">All statuses</option>
+                <option value="success">Success</option>
+                <option value="failed">Failed</option>
+              </select>
+              <select
+                value={providerFilter}
+                onChange={(event) => setProviderFilter(event.target.value)}
+                className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+              >
+                <option value="all">All providers</option>
+                {providers.map((provider) => (
+                  <option key={provider} value={provider}>
+                    {provider}
+                  </option>
+                ))}
+              </select>
+              <select
+                value={operationFilter}
+                onChange={(event) => setOperationFilter(event.target.value)}
+                className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+              >
+                <option value="all">All operations</option>
+                {operations.map((operation) => (
+                  <option key={operation} value={operation}>
+                    {operation}
+                  </option>
+                ))}
+              </select>
+            </div>
             <table className="w-full min-w-[760px] text-left text-sm">
               <thead className="text-xs uppercase text-muted-foreground">
                 <tr>
@@ -69,10 +118,12 @@ export default function UsagePage() {
                   <th>Tokens</th>
                   <th>Credits</th>
                   <th>Latency</th>
+                  <th>Trace</th>
+                  <th>Error</th>
                 </tr>
               </thead>
               <tbody>
-                {usageQuery.data?.logs.map((log) => (
+                {filteredLogs.map((log) => (
                   <tr key={log.id} className="border-t border-border">
                     <td className="py-3 text-muted-foreground">{new Date(log.created_at).toLocaleString()}</td>
                     <td>{log.operation_type}</td>
@@ -83,6 +134,40 @@ export default function UsagePage() {
                     <td>{log.total_tokens}</td>
                     <td>{log.credits_deducted}</td>
                     <td>{log.latency_ms ?? 0} ms</td>
+                    <td className="max-w-[160px] truncate text-muted-foreground">{log.langfuse_trace_id ?? "-"}</td>
+                    <td className="max-w-[220px] truncate text-muted-foreground">{log.error_message ?? "-"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Credit transactions</CardTitle>
+          </CardHeader>
+          <CardContent className="overflow-x-auto">
+            <table className="w-full min-w-[680px] text-left text-sm">
+              <thead className="text-xs uppercase text-muted-foreground">
+                <tr>
+                  <th className="py-2">Time</th>
+                  <th>Type</th>
+                  <th>Amount</th>
+                  <th>Balance after</th>
+                  <th>Metadata</th>
+                </tr>
+              </thead>
+              <tbody>
+                {usageQuery.data?.transactions.map((transaction) => (
+                  <tr key={transaction.id} className="border-t border-border">
+                    <td className="py-3 text-muted-foreground">{new Date(transaction.created_at).toLocaleString()}</td>
+                    <td>{transaction.transaction_type}</td>
+                    <td>{transaction.amount}</td>
+                    <td>{transaction.balance_after}</td>
+                    <td className="max-w-[260px] truncate text-muted-foreground">
+                      {JSON.stringify(transaction.transaction_metadata)}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -93,4 +178,3 @@ export default function UsagePage() {
     </AppShell>
   );
 }
-

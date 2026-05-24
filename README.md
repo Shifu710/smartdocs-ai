@@ -2,15 +2,15 @@
 
 SmartDocs AI is a production-style Enterprise RAG SaaS platform with document upload,
 hybrid retrieval (vector + keyword + RRF), source citations, multi-tenant RBAC,
-atomic credit billing, usage logs, admin analytics, a LangGraph-style pipeline, and
-Langfuse-ready observability.
+atomic credit billing, usage logs, admin analytics, real LangGraph nodes, and
+optional Langfuse observability.
 
 Built with: Next.js, FastAPI, PostgreSQL/pgvector, Redis/Celery, LangGraph,
 DeepSeek/Qwen-ready model gateway, and Docker.
 
 ## Phase Status
 
-Phase 1 through the first demo-ready RAG loop are implemented:
+Implemented product and engineering surface:
 
 - Monorepo structure with `apps/web` and `services/api`
 - FastAPI layered backend: router -> service -> repository -> model
@@ -19,18 +19,27 @@ Phase 1 through the first demo-ready RAG loop are implemented:
 - Workspace dashboard endpoint and frontend
 - Document list, upload, detail, chunk display, delete, and re-index endpoints
 - PDF, DOCX, TXT, and Markdown extraction through Celery document processing
-- Deterministic demo-local embeddings stored as pgvector-compatible 1024-dimension vectors
-- Hybrid retrieval scoring with vector-style overlap, keyword ranking, and RRF merge
-- POST streaming RAG chat with citations and Retrieval Debug Panel data
+- ModelGateway with DeepSeek, Qwen, OpenAI-compatible fallback, and demo-local fallback
+- EmbeddingGateway with Qwen support and deterministic demo-local fallback
+- Embeddings stored as pgvector-compatible 1024-dimension vectors
+- Hybrid retrieval with pgvector SQL, PostgreSQL full-text search, and RRF merge
+- LangGraph nodes for access, credits, query rewrite, retrieval, context build, generation, and finalize
+- POST streaming RAG chat with citations and Retrieval Debug Panel data including vector, keyword, and RRF fields
 - Atomic credit deduction after successful answers and zero deduction on failure
-- Usage logs and credit transactions for AI attempts
+- Usage logs, failed-call details, trace id, and credit transactions for AI attempts
 - Guest seed data with four pre-indexed demo documents
+- Members and Settings pages so every sidebar route resolves
 - Technical review page at `/technical-review`
 - Docker Compose, `.env.example`, GitHub Actions CI, seed script
 
-The no-key demo path is intentionally labeled `demo-local` in the UI and logs.
-Configure DeepSeek, Qwen, or OpenAI-compatible keys to replace deterministic demo
-responses with live model calls.
+The public no-key demo path is intentionally labeled `demo-local` in the UI and logs.
+When DeepSeek, Qwen, or OpenAI-compatible keys are configured, SmartDocs AI uses
+ModelGateway to call real LLM providers. When Qwen embedding keys are configured,
+EmbeddingGateway can produce real embeddings; otherwise it uses deterministic local
+embeddings so the public demo remains stable.
+
+Live demo: https://smartdocs-ai-three.vercel.app/
+GitHub: https://github.com/Shifu710/smartdocs-ai
 
 ## Demo Accounts
 
@@ -63,11 +72,29 @@ flowchart LR
   Docs --> Worker["Celery Worker"]
   Worker --> PG[("PostgreSQL + pgvector")]
   API --> RAG["LangGraph RAG Pipeline"]
-  RAG --> Retrieval["Hybrid Retrieval + RRF"]
+  RAG --> Retrieval["pgvector + Full-text + RRF"]
   RAG --> Billing["Credits + Usage Logs"]
   RAG -. provider keys .-> Gateway["DeepSeek / Qwen / OpenAI-compatible"]
   RAG -. optional .-> Langfuse["Langfuse Tracing"]
 ```
+
+## Provider Configuration
+
+Set provider keys in `.env` when you want live model calls:
+
+```bash
+AI_PROVIDER_MODE=auto
+DEEPSEEK_API_KEY=...
+QWEN_API_KEY=...
+OPENAI_API_KEY=...
+EMBEDDING_PROVIDER=auto
+QWEN_EMBEDDING_MODEL=text-embedding-v3
+LANGFUSE_ENABLED=true
+LANGFUSE_PUBLIC_KEY=...
+LANGFUSE_SECRET_KEY=...
+```
+
+If keys are missing, the app falls back to `demo-local` and clearly labels that mode.
 
 ## Local Setup
 
@@ -91,6 +118,7 @@ Open:
 - `POST /api/v1/workspaces/{workspace_id}/documents/upload`
 - `POST /api/v1/workspaces/{workspace_id}/chat/stream`
 - `GET /api/v1/workspaces/{workspace_id}/usage`
+- `GET /api/v1/workspaces/{workspace_id}/conversations`
 
 ## Development Commands
 
@@ -114,6 +142,13 @@ pytest tests/ -v
 alembic upgrade head
 uvicorn app.main:app --reload
 ```
+
+## Known Limitations
+
+- The public Vercel demo can run in `demo-local` mode when provider keys are not configured.
+- Langfuse traces are written only when Langfuse keys are configured.
+- Invite/settings writes are disabled in the public demo to keep the shared review tenant safe.
+- Conversation history endpoints are intentionally minimal until the full persisted chat UI is expanded.
 
 ## Screenshot Placeholders
 

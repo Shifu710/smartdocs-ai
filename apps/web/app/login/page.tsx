@@ -61,6 +61,9 @@ export default function LoginPage() {
               <Link href="/technical-review" className="text-sm font-medium text-primary">
                 Technical review
               </Link>
+              <a href="https://github.com/Shifu710/smartdocs-ai" className="text-sm font-medium text-primary">
+                GitHub repository
+              </a>
             </div>
           </div>
         </section>

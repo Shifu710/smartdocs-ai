@@ -19,6 +19,8 @@ class Citation(BaseModel):
 class RetrievalDebugItem(Citation):
     vector_rank: int | None = None
     keyword_rank: int | None = None
+    vector_distance: float | None = None
+    keyword_score: float | None = None
 
 
 class ChatResponse(BaseModel):
@@ -33,4 +35,3 @@ class ChatResponse(BaseModel):
     credits_used: int
     latency_ms: int
     trace_id: str | None = None
-

@@ -92,6 +92,26 @@ export default function SettingsPage() {
             </CardContent>
           </Card>
         </section>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>AI provider status</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-3 text-sm md:grid-cols-3">
+            <div className="rounded-md border border-border p-3">
+              <p className="text-muted-foreground">Model provider mode</p>
+              <p className="mt-1 font-medium">auto with demo-local fallback</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <p className="text-muted-foreground">Embedding provider mode</p>
+              <p className="mt-1 font-medium">qwen when configured, otherwise demo-local</p>
+            </div>
+            <div className="rounded-md border border-border p-3">
+              <p className="text-muted-foreground">Langfuse status</p>
+              <p className="mt-1 font-medium">disabled unless keys are configured</p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </AppShell>
   );

@@ -198,6 +198,10 @@ export default function ChatPage() {
                       <p className="mt-1 text-xs text-muted-foreground">
                         Vector #{item.vector_rank ?? "-"} | Keyword #{item.keyword_rank ?? "-"} | RRF {item.rrf_score}
                       </p>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        Distance {item.vector_distance ?? "-"} | Keyword score {item.keyword_score ?? "-"}
+                      </p>
+                      <p className="mt-2 text-xs text-muted-foreground">{item.preview}</p>
                     </article>
                   ))}
                 </CardContent>
@@ -209,4 +213,3 @@ export default function ChatPage() {
     </AppShell>
   );
 }
-

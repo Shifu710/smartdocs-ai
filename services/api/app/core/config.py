@@ -32,6 +32,28 @@ class Settings(BaseSettings):
     next_public_app_url: str = "http://localhost:3000"
     cors_origins_raw: str = "http://localhost:3000,http://127.0.0.1:3000"
 
+    ai_provider_mode: str = "auto"
+    deepseek_api_key: str = ""
+    deepseek_base_url: str = "https://api.deepseek.com"
+    deepseek_chat_model: str = "deepseek-chat"
+    qwen_api_key: str = ""
+    qwen_base_url: str = "https://dashscope.aliyuncs.com/compatible-mode/v1"
+    qwen_chat_model: str = "qwen-plus"
+    openai_api_key: str = ""
+    openai_base_url: str = "https://api.openai.com/v1"
+    openai_chat_model: str = "gpt-4o-mini"
+
+    embedding_provider: str = "auto"
+    qwen_embedding_model: str = "text-embedding-v3"
+    embedding_model: str = "text-embedding-v3"
+    embedding_dimension: int = 1024
+    demo_embedding_dim: int = 1024
+
+    langfuse_enabled: bool = True
+    langfuse_public_key: str = ""
+    langfuse_secret_key: str = ""
+    langfuse_host: str = "https://cloud.langfuse.com"
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

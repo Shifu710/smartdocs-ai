@@ -89,6 +89,11 @@ export default function DocumentDetailPage() {
                       <span>Chunk {chunk.chunk_index}</span>
                       <span>{chunk.token_count} estimated tokens</span>
                     </div>
+                    <div className="mt-2 flex flex-wrap gap-2 text-xs text-muted-foreground">
+                      <span>Embedding provider: {String(chunk.chunk_metadata.embedding_provider ?? chunk.chunk_metadata.provider ?? "demo-local")}</span>
+                      <span>Model: {String(chunk.chunk_metadata.embedding_model ?? "deterministic-hash-embedding")}</span>
+                      {document.last_indexed_at ? <span>Indexed: {new Date(document.last_indexed_at).toLocaleString()}</span> : null}
+                    </div>
                     <p className="mt-3 whitespace-pre-wrap text-sm leading-6">{chunk.content}</p>
                   </article>
                 ))}

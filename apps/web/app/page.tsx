@@ -1,4 +1,13 @@
-import { ArrowRight, BarChart3, Database, FileSearch, LockKeyhole, MessageSquareText, ShieldCheck } from "lucide-react";
+import {
+  ArrowRight,
+  BarChart3,
+  Database,
+  FileSearch,
+  Github,
+  LockKeyhole,
+  MessageSquareText,
+  ShieldCheck
+} from "lucide-react";
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
@@ -76,6 +85,13 @@ export default function HomePage() {
             >
               Read technical review
             </Link>
+            <a
+              href="https://github.com/Shifu710/smartdocs-ai"
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-border bg-card px-4 text-sm font-medium hover:bg-muted"
+            >
+              <Github className="h-4 w-4" aria-hidden="true" />
+              GitHub Repository
+            </a>
           </div>
         </div>
 
@@ -133,6 +149,54 @@ export default function HomePage() {
               {step}
             </div>
           ))}
+        </div>
+      </section>
+
+      <section className="border-t border-border bg-card">
+        <div className="mx-auto grid max-w-6xl gap-6 px-4 py-10 lg:grid-cols-3">
+          <div>
+            <h2 className="text-2xl font-semibold">Live demo flow</h2>
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">
+              Open the guest demo, land in the seeded workspace, inspect indexed documents, ask a cited RAG question,
+              verify credits and usage logs, then review architecture details.
+            </p>
+          </div>
+          <div className="rounded-md border border-border bg-background p-4">
+            <h3 className="font-semibold">Architecture mini-diagram</h3>
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">
+              Next.js UI to FastAPI to JWT/RBAC to document indexing to pgvector and full-text retrieval to LangGraph
+              RAG flow to ModelGateway to credits, usage logs, and optional Langfuse tracing.
+            </p>
+          </div>
+          <div className="rounded-md border border-border bg-background p-4">
+            <h3 className="font-semibold">Provider mode</h3>
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">
+              The public demo uses demo-local provider when real model keys are not configured. Real DeepSeek/Qwen
+              support is available when environment variables are configured.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto grid max-w-6xl gap-6 px-4 py-10 md:grid-cols-2">
+        <div>
+          <h2 className="text-2xl font-semibold">Tech stack</h2>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {["Next.js", "TypeScript", "FastAPI", "SQLAlchemy", "PostgreSQL", "pgvector", "LangGraph", "DeepSeek-ready", "Qwen-ready", "Langfuse-ready", "Vercel"].map(
+              (item) => (
+                <Badge key={item} tone="muted">
+                  {item}
+                </Badge>
+              )
+            )}
+          </div>
+        </div>
+        <div>
+          <h2 className="text-2xl font-semibold">AI Native role signal</h2>
+          <p className="mt-3 text-sm leading-6 text-muted-foreground">
+            SmartDocs shows product delivery beyond a chat box: multi-tenant SaaS boundaries, RBAC, document processing,
+            hybrid retrieval, citations, billing discipline, observability hooks, and an HR-ready public demo.
+          </p>
         </div>
       </section>
     </main>

@@ -15,10 +15,15 @@ const proofPoints = [
 const codeLinks = [
   "services/api/app/services/chat_service.py",
   "services/api/app/services/retrieval_service.py",
+  "services/api/app/repositories/retrieval_repository.py",
+  "services/api/app/ai/model_gateway.py",
+  "services/api/app/ai/embedding_gateway.py",
+  "services/api/app/rag/rag_graph.py",
+  "services/api/app/observability/tracing.py",
   "services/api/app/services/document_service.py",
-  "services/api/app/services/credit_service.py",
-  "services/api/app/routes/chat.py",
-  "services/api/app/routes/admin.py",
+  "services/api/app/services/billing_service.py",
+  "services/api/app/api/v1/chat.py",
+  "services/api/app/api/v1/admin.py",
   "apps/web/app/demo/page.tsx",
   "apps/web/app/workspaces/[workspaceId]/chat/page.tsx",
   "apps/web/app/workspaces/[workspaceId]/usage/page.tsx"
@@ -33,7 +38,7 @@ const reviewSections = [
   {
     title: "RAG Retrieval",
     icon: GitBranch,
-    body: "The chat flow retrieves workspace-scoped chunks, ranks source evidence, and returns citations with document names, chunk ids, previews, and rank/debug fields. The architecture is ready for pgvector-backed retrieval and hybrid rank fusion."
+    body: "The chat flow uses a RetrievalService with pgvector similarity SQL, PostgreSQL full-text search, and reciprocal rank fusion. If a local database lacks vector support, the service falls back to deterministic Python ranking for demo continuity."
   },
   {
     title: "Model Gateway",
@@ -51,10 +56,28 @@ const reviewSections = [
     body: "Credit deduction happens after a successful AI response and is written alongside usage logs. This keeps billing visible and prevents failed model calls from consuming balance."
   },
   {
+    title: "LangGraph Flow",
+    icon: GitBranch,
+    body: "The RAG request moves through validate_access, check_credits, rewrite_query, retrieve, build_context, generate, and finalize nodes. Finalize deducts credits and writes the usage log after generation succeeds."
+  },
+  {
     title: "Tenant Isolation",
     icon: LockKeyhole,
     body: "Every workspace route and API request is scoped by workspace id. Documents, chunks, credits, members, settings, and usage records are tenant-owned surfaces."
   }
+];
+
+const deepDiveSections = [
+  "Document indexing flow: upload, type validation, extraction, chunking, embedding generation, chunk persistence, and indexed status update.",
+  "RAG chat flow: JWT workspace request, RBAC check, credit precheck, retrieval, context build, ModelGateway generation, citations, billing, and usage log.",
+  "Hybrid retrieval algorithm: pgvector distance and PostgreSQL full-text search are merged by reciprocal rank fusion.",
+  "ModelGateway provider strategy: DeepSeek first, Qwen fallback, OpenAI-compatible optional fallback, then demo-local when no keys are configured.",
+  "Embedding provider strategy: Qwen embeddings when configured, deterministic hash embeddings for public demo fallback.",
+  "Failed-call no-deduction logic: exceptions roll back pending writes, add failed usage logs with zero credits, and avoid exposing provider secrets.",
+  "Usage logs and audit trail: status, provider, model, tokens, latency, credits, trace id, and error details are recorded.",
+  "RBAC and tenant isolation: workspace membership gates routes; guest/viewer users see read-only UI for risky actions.",
+  "Langfuse observability: tracing code is implemented and safely disabled unless Langfuse keys are configured.",
+  "Production deployment notes: the live Vercel deployment serves frontend routes and FastAPI under the /_/api prefix."
 ];
 
 export default function TechnicalReviewPage() {
@@ -96,8 +119,10 @@ export default function TechnicalReviewPage() {
   Docs --> Worker[Indexing path]
   Worker --> Chunks[(PostgreSQL document chunks)]
   API --> Chat[Streaming Chat Route]
-  Chat --> Retrieval[Workspace-scoped retrieval]
-  Chat --> Gateway[Model Gateway or demo-local]
+  Chat --> Graph[LangGraph RAG Nodes]
+  Graph --> Retrieval[pgvector + Full-text + RRF]
+  Graph --> Gateway[DeepSeek/Qwen/OpenAI-compatible or demo-local]
+  Graph --> Langfuse[Optional Langfuse Trace]
   Chat --> Billing[Credits + Usage Logs]
   Billing --> DB[(PostgreSQL)]`}
             </pre>
@@ -145,7 +170,7 @@ export default function TechnicalReviewPage() {
             <CardContent className="grid gap-3 text-sm leading-6 text-muted-foreground">
               <p>1. The browser authenticates with JWT and sends workspace-scoped API requests.</p>
               <p>2. FastAPI checks the workspace membership and role before returning tenant data.</p>
-              <p>3. Chat streams answer tokens through server-sent events, then sends the final citations and usage metadata.</p>
+              <p>3. LangGraph runs access, credit, retrieval, context, generation, and finalize nodes.</p>
               <p>4. Credits and usage logs are written only after the answer is complete.</p>
             </CardContent>
           </Card>
@@ -156,11 +181,22 @@ export default function TechnicalReviewPage() {
             </CardHeader>
             <CardContent className="grid gap-3 text-sm leading-6 text-muted-foreground">
               <p>The public demo uses a deterministic demo-local provider when external model keys are absent.</p>
-              <p>The current review build focuses on product flow; deeper LangGraph orchestration and Langfuse tracing are documented upgrade points.</p>
+              <p>Langfuse traces are disabled in the public demo unless LANGFUSE keys are configured.</p>
               <p>Settings and invites are intentionally read-only in the public demo to avoid mutation risk on the shared deployment.</p>
             </CardContent>
           </Card>
         </section>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Engineering details</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-3 text-sm leading-6 text-muted-foreground md:grid-cols-2">
+            {deepDiveSections.map((section) => (
+              <p key={section}>{section}</p>
+            ))}
+          </CardContent>
+        </Card>
 
         <Card>
           <CardHeader>
