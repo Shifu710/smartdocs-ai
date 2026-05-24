@@ -139,9 +139,9 @@ class RetrievalService:
 
     def _to_retrieved(self, row: dict, rrf_score: float) -> RetrievedChunk:
         return RetrievedChunk(
-            chunk_id=row["chunk_id"],
-            workspace_id=row["workspace_id"],
-            document_id=row["document_id"],
+            chunk_id=str(row["chunk_id"]),
+            workspace_id=str(row["workspace_id"]),
+            document_id=str(row["document_id"]),
             document_name=row["document_name"],
             chunk_index=int(row["chunk_index"]),
             content=row["content"],
