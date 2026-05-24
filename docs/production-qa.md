@@ -43,8 +43,9 @@ Tester: Codex
 - Stream final event observed: yes
 - Citations observed: yes
 - Retrieval debug observed: vector rank, keyword rank, vector distance, keyword score, RRF score, source preview
-- Credits before/after in last verified run: 485 -> 480
-- Usage logs before/after in last verified run: 8 -> 9
+- Credits before/after in last verified run: 470 -> 465
+- Usage logs before/after in last verified run: 11 -> 12
+- Conversation persistence observed: created conversation, saved user message, saved assistant message with citations/debug metadata
 
 ## Known Issues
 
