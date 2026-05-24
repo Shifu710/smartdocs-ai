@@ -8,6 +8,7 @@ from slowapi import _rate_limit_exceeded_handler
 
 from app.api.v1.router import api_router
 from app.core.config import settings
+from app.db.session import create_missing_tables
 
 
 limiter = Limiter(key_func=get_remote_address)
@@ -33,6 +34,10 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(api_router, prefix=settings.api_v1_prefix)
+
+    @app.on_event("startup")
+    async def ensure_schema() -> None:
+        await create_missing_tables()
 
     @app.get("/health", tags=["health"])
     async def health_check() -> dict[str, str]:

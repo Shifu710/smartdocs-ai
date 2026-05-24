@@ -27,6 +27,7 @@ Implemented product and engineering surface:
 - POST streaming RAG chat with citations and Retrieval Debug Panel data including vector, keyword, and RRF fields
 - Atomic credit deduction after successful answers and zero deduction on failure
 - Usage logs, failed-call details, trace id, and credit transactions for AI attempts
+- Dedicated conversation and message history for RAG chats
 - Guest seed data with four pre-indexed demo documents
 - Members and Settings pages so every sidebar route resolves
 - Technical review page at `/technical-review`
@@ -158,6 +159,20 @@ uvicorn app.main:app --reload
 - RAG chat with citations and Retrieval Debug Panel
 - Usage logs with credit deduction
 - Technical review page
+
+## Chinese Summary
+
+SmartDocs AI is an enterprise RAG knowledge-base SaaS project. It supports multi-tenant workspaces, document upload,
+vector retrieval, source citations, credit billing, usage logs, LangGraph RAG flow, ModelGateway, and Langfuse-ready
+observability.
+
+SmartDocs AI 是一个企业级 RAG 知识库 SaaS 项目，支持多租户工作区、文档上传、向量检索、引用来源、积分扣费、用量日志、LangGraph RAG 流程、模型网关和 Langfuse 可观测性。
+
+## Production QA Evidence
+
+- Flagship checklist: `docs/flagship-readiness-checklist.md`
+- Production QA: `docs/production-qa.md`
+- Latest production URL: https://smartdocs-ai-three.vercel.app
 
 ## What This Project Proves For AI Native Roles
 

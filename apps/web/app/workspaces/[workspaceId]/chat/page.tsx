@@ -1,6 +1,6 @@
 "use client";
 
-import { Bot, FileText, Send, Sparkles } from "lucide-react";
+import { Bot, FileText, MessageSquarePlus, Send, Sparkles } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -9,7 +9,15 @@ import { AppShell } from "@/components/app-shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getAccessToken, listDocuments, streamChat, type ChatFinal } from "@/lib/api";
+import {
+  createConversation,
+  getAccessToken,
+  listConversationMessages,
+  listConversations,
+  listDocuments,
+  streamChat,
+  type ChatFinal
+} from "@/lib/api";
 
 const suggestions = [
   "What is the refund policy?",
@@ -28,6 +36,7 @@ export default function ChatPage() {
   const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
   const [answer, setAnswer] = useState("");
   const [final, setFinal] = useState<ChatFinal | null>(null);
+  const [conversationId, setConversationId] = useState<string | null>(null);
   const [isStreaming, setIsStreaming] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -41,6 +50,18 @@ export default function ChatPage() {
     queryKey: ["documents", workspaceId],
     queryFn: () => listDocuments(workspaceId),
     enabled: Boolean(workspaceId) && Boolean(getAccessToken())
+  });
+
+  const conversationsQuery = useQuery({
+    queryKey: ["conversations", workspaceId],
+    queryFn: () => listConversations(workspaceId),
+    enabled: Boolean(workspaceId) && Boolean(getAccessToken())
+  });
+
+  const messagesQuery = useQuery({
+    queryKey: ["conversation-messages", workspaceId, conversationId],
+    queryFn: () => listConversationMessages(workspaceId, conversationId as string),
+    enabled: Boolean(workspaceId) && Boolean(conversationId) && Boolean(getAccessToken())
   });
 
   const indexedDocuments = useMemo(
@@ -64,11 +85,16 @@ export default function ChatPage() {
     setError(null);
     setIsStreaming(true);
     try {
-      const result = await streamChat(workspaceId, question, selectedDocuments, (token) => {
+      const activeConversationId = conversationId;
+      const result = await streamChat(workspaceId, question, selectedDocuments, activeConversationId, (token) => {
         setAnswer((current) => `${current}${token}`);
       });
       setFinal(result);
+      setConversationId(result.conversation_id);
       queryClient.invalidateQueries({ queryKey: ["workspace-dashboard", workspaceId] });
+      queryClient.invalidateQueries({ queryKey: ["usage", workspaceId] });
+      queryClient.invalidateQueries({ queryKey: ["conversations", workspaceId] });
+      queryClient.invalidateQueries({ queryKey: ["conversation-messages", workspaceId, result.conversation_id] });
     } catch (streamError) {
       setError(streamError instanceof Error ? streamError.message : "Chat failed");
     } finally {
@@ -76,10 +102,49 @@ export default function ChatPage() {
     }
   }
 
+  async function startNewChat() {
+    const conversation = await createConversation(workspaceId, "New chat");
+    setConversationId(conversation.id);
+    setAnswer("");
+    setFinal(null);
+    queryClient.invalidateQueries({ queryKey: ["conversations", workspaceId] });
+  }
+
   return (
     <AppShell title="RAG Chat" workspaceId={workspaceId}>
       <div className="grid gap-5 lg:grid-cols-[280px_1fr]">
         <aside className="grid gap-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Conversations</CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-2">
+              <Button type="button" variant="secondary" size="sm" onClick={startNewChat}>
+                <MessageSquarePlus className="h-4 w-4" aria-hidden="true" />
+                New chat
+              </Button>
+              {(conversationsQuery.data ?? []).map((conversation) => (
+                <button
+                  key={conversation.id}
+                  type="button"
+                  onClick={() => {
+                    setConversationId(conversation.id);
+                    setAnswer("");
+                    setFinal(null);
+                  }}
+                  className={`rounded-md border border-border p-3 text-left text-sm hover:bg-muted ${
+                    conversation.id === conversationId ? "bg-muted" : ""
+                  }`}
+                >
+                  <span className="block truncate font-medium">{conversation.title}</span>
+                  <span className="mt-1 block text-xs text-muted-foreground">
+                    {conversation.provider ?? "draft"} | {new Date(conversation.updated_at).toLocaleDateString()}
+                  </span>
+                </button>
+              ))}
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader>
               <CardTitle className="text-base">Document filter</CardTitle>
@@ -164,6 +229,26 @@ export default function ChatPage() {
                     <Badge tone="muted">{final.latency_ms} ms</Badge>
                   </div>
                 ) : null}
+              </CardContent>
+            </Card>
+          ) : null}
+
+          {messagesQuery.data?.length ? (
+            <Card>
+              <CardHeader>
+                <CardTitle>Current conversation</CardTitle>
+              </CardHeader>
+              <CardContent className="grid gap-3">
+                {messagesQuery.data.map((message) => (
+                  <article key={message.id} className="rounded-md border border-border p-3">
+                    <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                      <Badge tone={message.role === "assistant" ? "success" : "muted"}>{message.role}</Badge>
+                      {message.provider ? <span>{message.provider}</span> : null}
+                      {message.total_tokens ? <span>{message.total_tokens} tokens</span> : null}
+                    </div>
+                    <p className="mt-2 whitespace-pre-wrap text-sm leading-6">{message.content}</p>
+                  </article>
+                ))}
               </CardContent>
             </Card>
           ) : null}

@@ -80,6 +80,7 @@ export type Citation = {
 };
 
 export type ChatFinal = {
+  conversation_id: string;
   answer: string;
   citations: Citation[];
   debug: Citation[];
@@ -91,6 +92,41 @@ export type ChatFinal = {
   credits_used: number;
   latency_ms: number;
   trace_id?: string | null;
+};
+
+export type Conversation = {
+  id: string;
+  workspace_id: string;
+  user_id?: string | null;
+  title: string;
+  status: string;
+  provider?: string | null;
+  model?: string | null;
+  total_tokens: number;
+  credits_used: number;
+  trace_id?: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ConversationMessage = {
+  id: string;
+  workspace_id: string;
+  conversation_id: string;
+  user_id?: string | null;
+  role: "user" | "assistant" | string;
+  content: string;
+  provider?: string | null;
+  model?: string | null;
+  prompt_tokens: number;
+  completion_tokens: number;
+  total_tokens: number;
+  credits_used: number;
+  latency_ms?: number | null;
+  trace_id?: string | null;
+  citations: Citation[];
+  message_metadata: Record<string, unknown>;
+  created_at: string;
 };
 
 export type UsageLog = {
@@ -309,11 +345,31 @@ export function streamChat(
   workspaceId: string,
   question: string,
   documentIds: string[],
+  conversationId: string | null,
   onToken: (token: string) => void
 ) {
-  return apiStream(`/api/v1/workspaces/${workspaceId}/chat/stream`, { question, document_ids: documentIds }, onToken);
+  return apiStream(
+    `/api/v1/workspaces/${workspaceId}/chat/stream`,
+    { question, document_ids: documentIds, conversation_id: conversationId },
+    onToken
+  );
 }
 
 export function getUsage(workspaceId: string) {
   return apiRequest<UsageSummary>(`/api/v1/workspaces/${workspaceId}/usage`);
+}
+
+export function listConversations(workspaceId: string) {
+  return apiRequest<Conversation[]>(`/api/v1/workspaces/${workspaceId}/conversations`);
+}
+
+export function createConversation(workspaceId: string, title = "New chat") {
+  return apiRequest<Conversation>(`/api/v1/workspaces/${workspaceId}/conversations`, {
+    method: "POST",
+    body: JSON.stringify({ title })
+  });
+}
+
+export function listConversationMessages(workspaceId: string, conversationId: string) {
+  return apiRequest<ConversationMessage[]>(`/api/v1/workspaces/${workspaceId}/conversations/${conversationId}/messages`);
 }

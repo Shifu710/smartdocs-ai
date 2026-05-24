@@ -32,6 +32,7 @@ class ChatService:
         current_user: User,
         question: str,
         document_ids: list[str],
+        conversation_id: str | None = None,
     ) -> ChatResponse:
         started = time.perf_counter()
         tracer = RAGTracer(workspace_id=workspace.id, user_id=current_user.id, question=question)
@@ -43,6 +44,7 @@ class ChatService:
                     "current_user": current_user,
                     "question": question,
                     "document_ids": document_ids,
+                    "conversation_id": conversation_id,
                     "credits_required": RAG_CREDITS,
                     "retrieval_service": self.retrieval,
                     "model_gateway": self.model_gateway,
@@ -53,6 +55,7 @@ class ChatService:
             )
             model_response = state["model_response"]
             return ChatResponse(
+                conversation_id=str(state["conversation"].id),
                 answer=model_response.content,
                 citations=state["citations"],
                 debug=state["debug"],

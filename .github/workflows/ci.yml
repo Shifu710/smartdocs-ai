@@ -13,6 +13,7 @@ jobs:
       - run: cd apps/web && npm install
       - run: cd apps/web && npm run type-check
       - run: cd apps/web && npm run lint
+      - run: cd apps/web && npm run build
 
   backend:
     runs-on: ubuntu-latest
@@ -22,5 +23,5 @@ jobs:
         with:
           python-version: "3.11"
       - run: cd services/api && pip install -r requirements.txt
-      - run: cd services/api && ruff check app/
+      - run: cd services/api && ruff check app/ tests/
       - run: cd services/api && pytest tests/ -v

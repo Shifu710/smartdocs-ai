@@ -19,6 +19,7 @@ const codeLinks = [
   "services/api/app/ai/model_gateway.py",
   "services/api/app/ai/embedding_gateway.py",
   "services/api/app/rag/rag_graph.py",
+  "services/api/app/models/conversation.py",
   "services/api/app/observability/tracing.py",
   "services/api/app/services/document_service.py",
   "services/api/app/services/billing_service.py",
@@ -77,6 +78,9 @@ const deepDiveSections = [
   "Usage logs and audit trail: status, provider, model, tokens, latency, credits, trace id, and error details are recorded.",
   "RBAC and tenant isolation: workspace membership gates routes; guest/viewer users see read-only UI for risky actions.",
   "Langfuse observability: tracing code is implemented and safely disabled unless Langfuse keys are configured.",
+  "Conversation history: each RAG call can persist user and assistant messages with citations, provider, model, tokens, credits, latency, and trace id.",
+  "Security guardrails: document content is treated as untrusted context and workspace membership gates protected routes.",
+  "Test coverage summary: backend gateway, retrieval, security, and RRF tests run in CI alongside frontend type-check, lint, and build.",
   "Production deployment notes: the live Vercel deployment serves frontend routes and FastAPI under the /_/api prefix."
 ];
 

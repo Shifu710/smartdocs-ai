@@ -24,6 +24,7 @@ export default function UsagePage() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [providerFilter, setProviderFilter] = useState("all");
   const [operationFilter, setOperationFilter] = useState("all");
+  const [dateFilter, setDateFilter] = useState("");
 
   useEffect(() => {
     if (!getAccessToken()) {
@@ -41,12 +42,20 @@ export default function UsagePage() {
   const providers = useMemo(() => Array.from(new Set(logs.map((log) => log.provider).filter(Boolean))) as string[], [logs]);
   const operations = useMemo(() => Array.from(new Set(logs.map((log) => log.operation_type))), [logs]);
   const filteredLogs = logs.filter((log) => {
+    const matchesDate = !dateFilter || log.created_at.slice(0, 10) === dateFilter;
     return (
       (statusFilter === "all" || log.status === statusFilter) &&
       (providerFilter === "all" || log.provider === providerFilter) &&
-      (operationFilter === "all" || log.operation_type === operationFilter)
+      (operationFilter === "all" || log.operation_type === operationFilter) &&
+      matchesDate
     );
   });
+  const averageLatency = filteredLogs.length
+    ? Math.round(filteredLogs.reduce((total, log) => total + (log.latency_ms ?? 0), 0) / filteredLogs.length)
+    : 0;
+  const providerBreakdown = providers
+    .map((provider) => `${provider}: ${logs.filter((log) => log.provider === provider).length}`)
+    .join(" | ");
 
   return (
     <AppShell title="Usage" workspaceId={workspaceId}>
@@ -66,6 +75,25 @@ export default function UsagePage() {
               </Card>
             );
           })}
+        </section>
+
+        <section className="grid gap-4 md:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>Provider/model breakdown</CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-muted-foreground">
+              {providerBreakdown || "No provider calls yet."}
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Average latency</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-semibold">{averageLatency} ms</p>
+            </CardContent>
+          </Card>
         </section>
 
         <Card>
@@ -107,6 +135,12 @@ export default function UsagePage() {
                   </option>
                 ))}
               </select>
+              <input
+                type="date"
+                value={dateFilter}
+                onChange={(event) => setDateFilter(event.target.value)}
+                className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+              />
             </div>
             <table className="w-full min-w-[760px] text-left text-sm">
               <thead className="text-xs uppercase text-muted-foreground">
