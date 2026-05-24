@@ -1,0 +1,51 @@
+services:
+  web:
+    build: ./apps/web
+    ports:
+      - "3000:3000"
+    env_file: .env
+    depends_on:
+      - api
+
+  api:
+    build: ./services/api
+    command: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    ports:
+      - "8000:8000"
+    env_file: .env
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - uploads_data:/uploads
+
+  worker:
+    build: ./services/api
+    command: celery -A app.workers.celery_app worker --loglevel=info
+    env_file: .env
+    depends_on:
+      - api
+      - postgres
+      - redis
+    volumes:
+      - uploads_data:/uploads
+
+  postgres:
+    image: pgvector/pgvector:pg15
+    environment:
+      POSTGRES_DB: smartdocs
+      POSTGRES_USER: smartdocs
+      POSTGRES_PASSWORD: smartdocs
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+volumes:
+  postgres_data:
+  uploads_data:

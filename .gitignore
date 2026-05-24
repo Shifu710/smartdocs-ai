@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+
+# Framework output
+.next/
+*.tsbuildinfo
+dist/
+build/
+
+# Env and local data
+.env
+uploads/
+postgres_data/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

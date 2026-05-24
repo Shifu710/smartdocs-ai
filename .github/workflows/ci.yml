@@ -1,0 +1,26 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: cd apps/web && npm install
+      - run: cd apps/web && npm run type-check
+      - run: cd apps/web && npm run lint
+
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: cd services/api && pip install -r requirements.txt
+      - run: cd services/api && ruff check app/
+      - run: cd services/api && pytest tests/ -v

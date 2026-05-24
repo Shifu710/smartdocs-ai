@@ -1,0 +1,1 @@
+"""SmartDocs AI FastAPI application."""
