@@ -91,11 +91,8 @@ class ChatService:
 
     def _safe_error(self, exc: Exception) -> str:
         text = str(exc) or exc.__class__.__name__
-        for secret in (
-            self.model_gateway.providers[0].api_key,
-            self.model_gateway.providers[1].api_key,
-            self.model_gateway.providers[2].api_key,
-        ):
+        for provider in getattr(self.model_gateway, "providers", []):
+            secret = getattr(provider, "api_key", None)
             if secret:
                 text = text.replace(secret, "[redacted]")
         return text[:500]
