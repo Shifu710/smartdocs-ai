@@ -33,4 +33,4 @@ The public demo may run in `demo-local` provider mode. Screenshots should not hi
 
 ## Current Status
 
-The README references the expected screenshot filenames above. Add the PNG files here after capturing final browser screenshots.
+The expected PNG files are present. Refresh these screenshots after major UI, routing, or demo-data changes.

@@ -57,30 +57,36 @@ This project was created as a flagship AI Native Full-Stack portfolio project. I
 - Langfuse-ready observability when keys are configured
 - Docker Compose local stack and GitHub Actions CI
 
-## Screenshots to Add
+## Screenshots
 
-Screenshots will be added under `docs/assets/` after final browser capture. The screenshot capture plan is documented in [docs/assets/README.md](docs/assets/README.md).
+Screenshots are stored under `docs/assets/`. The screenshot capture plan is documented in [docs/assets/README.md](docs/assets/README.md).
 
-| Screenshot | Target File |
-| --- | --- |
-| Landing page | `docs/assets/landing-page.png` |
-| Workspace dashboard | `docs/assets/workspace-dashboard.png` |
-| Documents page | `docs/assets/documents-page.png` |
-| RAG chat with citations | `docs/assets/rag-chat-citations.png` |
-| Retrieval Debug Panel | `docs/assets/retrieval-debug-panel.png` |
-| Usage logs and credit transactions | `docs/assets/usage-logs.png` |
-| Technical review page | `docs/assets/technical-review.png` |
-| Architecture diagram | `docs/assets/smartdocs-ai-architecture.png` |
+### Landing Page
+![Landing Page](docs/assets/landing-page.png)
+
+### Workspace Dashboard
+![Workspace Dashboard](docs/assets/workspace-dashboard.png)
+
+### Documents Page
+![Documents Page](docs/assets/documents-page.png)
+
+### RAG Chat with Citations
+![RAG Chat with Citations](docs/assets/rag-chat-citations.png)
+
+### Retrieval Debug Panel
+![Retrieval Debug Panel](docs/assets/retrieval-debug-panel.png)
+
+### Usage Logs and Credit Transactions
+![Usage Logs](docs/assets/usage-logs.png)
+
+### Technical Review Page
+![Technical Review](docs/assets/technical-review.png)
 
 ## Architecture Diagram
 
+![SmartDocs AI Architecture](docs/assets/smartdocs-ai-architecture.png)
+
 See the detailed Mermaid architecture diagram in [docs/architecture.md](docs/architecture.md).
-
-A PNG version of the architecture diagram will be added later at:
-
-```txt
-docs/assets/smartdocs-ai-architecture.png
-```
 
 SmartDocs AI follows a production-style AI SaaS architecture: Next.js frontend, FastAPI backend, JWT/RBAC workspace access, document indexing, pgvector/full-text retrieval, LangGraph RAG orchestration, ModelGateway provider abstraction, credit billing, usage logs, and Langfuse-ready observability.
 
