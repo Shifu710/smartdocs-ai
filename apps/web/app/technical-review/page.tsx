@@ -1,4 +1,14 @@
-import { ArrowRight, CheckCircle2, Database, GitBranch, LockKeyhole, Server, ShieldCheck, WalletCards } from "lucide-react";
+import {
+  ArrowRight,
+  CheckCircle2,
+  Database,
+  GitBranch,
+  LockKeyhole,
+  MessageCircle,
+  Server,
+  ShieldCheck,
+  WalletCards
+} from "lucide-react";
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
@@ -164,6 +174,37 @@ export default function TechnicalReviewPage() {
               );
             })}
           </div>
+        </section>
+
+        <section className="grid gap-4 md:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>Current public demo mode</CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-3 text-sm leading-6 text-muted-foreground">
+              <p>The public demo may use demo-local provider mode for stability and cost control.</p>
+              <p>Real providers supported by the backend include DeepSeek, Qwen, and OpenAI-compatible APIs when keys are configured.</p>
+              <p>
+                EmbeddingGateway supports Qwen embeddings when configured and deterministic demo-local embeddings for the
+                public no-key demo.
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <MessageCircle className="h-4 w-4 text-primary" aria-hidden="true" />
+                China-market contact
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-3 text-sm leading-6 text-muted-foreground">
+              <p>WeChat: mgamal012</p>
+              <p>Email: mohamed.gamalj8@gmail.com</p>
+              <p>For HR review, technical discussion, collaboration, or hiring discussion.</p>
+              <p>中国区联系：微信 mgamal012。适用于 HR 沟通、技术评审、项目合作或面试交流。</p>
+            </CardContent>
+          </Card>
         </section>
 
         <section className="grid gap-4 md:grid-cols-2">

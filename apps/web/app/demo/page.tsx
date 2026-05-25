@@ -72,6 +72,7 @@ export default function DemoPage() {
           <CardTitle>{error ? "Demo unavailable" : "Opening guest demo"}</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4 text-sm text-muted-foreground">
+          <p>Public demo may use demo-local provider mode for stability and cost control.</p>
           {error ? (
             <>
               <p>{error}</p>

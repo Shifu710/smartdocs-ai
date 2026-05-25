@@ -54,7 +54,7 @@ export default function HomePage() {
         />
         <div className="absolute inset-0 bg-[linear-gradient(90deg,hsl(var(--card))_0%,hsl(var(--card)/0.92)_43%,hsl(var(--card)/0.18)_100%)]" />
         <div className="relative mx-auto flex max-w-6xl flex-col justify-center px-4 py-16 md:min-h-[78vh]">
-          <Badge tone="muted">Enterprise RAG SaaS demo</Badge>
+          <Badge tone="muted">Secure document intelligence</Badge>
           <h1 className="mt-5 max-w-3xl text-4xl font-semibold tracking-normal text-foreground md:text-6xl">
             Secure document intelligence for teams that need cited answers.
           </h1>

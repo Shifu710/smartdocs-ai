@@ -53,6 +53,7 @@ export function MarketingShell({ children }: { children: ReactNode }) {
               A production-style Enterprise RAG SaaS demo for secure document intelligence. The public demo can run in
               demo-local provider mode when real model keys are not configured.
             </p>
+            <p className="mt-3 text-sm font-medium text-muted-foreground">China contact: WeChat mgamal012</p>
           </div>
           <div>
             <h2 className="text-sm font-semibold">Product</h2>
@@ -76,6 +77,9 @@ export function MarketingShell({ children }: { children: ReactNode }) {
               <a href="https://github.com/Shifu710/smartdocs-ai" className="inline-flex items-center gap-2 hover:text-foreground">
                 <Github className="h-4 w-4" aria-hidden="true" />
                 GitHub repository
+              </a>
+              <a href="https://github.com/Shifu710" className="hover:text-foreground">
+                GitHub profile
               </a>
               <Link href="/workspaces" className="hover:text-foreground">
                 Workspace app

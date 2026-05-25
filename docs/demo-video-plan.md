@@ -1,22 +1,36 @@
 # Demo Video Plan
 
-A short 60-120 second walkthrough will be added after final recording. Do not add a video link until the recording exists.
+Do not add a public video link until a real screen recording exists.
 
-## Planned flow
+## Recommended recording format
 
-1. Open the product homepage.
-2. Click **Try live demo**.
-3. Enter the guest demo workspace.
-4. Open **Documents** and review indexed files.
-5. Open **Chat** and ask: `What is the refund policy?`
-6. Inspect cited answer and Retrieval Debug Panel.
-7. Open **Usage** and verify credit deduction and usage logs.
-8. Open **Technical Review**.
+- Length: 60-120 seconds
+- Narration: English
+- Captions: Chinese subtitles
+- Source: live deployed app, not local mock
+- Show demo-local provider mode honestly if visible
 
-## Recording checklist
+## Storyboard
 
-- [ ] Record the live deployed app, not a local-only mock.
-- [ ] Keep `demo-local` provider labels visible if they appear in the UI.
-- [ ] Avoid claiming DeepSeek/Qwen/OpenAI-compatible providers are active unless the deployment is configured with real keys.
-- [ ] Avoid fake customer names, fake logos, fake pricing, and fake payment links.
-- [ ] Keep the final video concise enough for HR and technical reviewers.
+| Time | Scene | What to show |
+| --- | --- | --- |
+| 0-5s | Homepage | Product headline and Try demo CTA |
+| 5-15s | Demo entry | Click Try demo and open guest workspace |
+| 15-25s | Dashboard | Workspace, credits, documents, usage summary |
+| 25-40s | Documents | Indexed files and chunk/status information |
+| 40-75s | Chat | Ask `What is the refund policy?` |
+| 75-95s | Citations/debug | Show cited answer, source chunks, RRF/debug info |
+| 95-110s | Usage | Show credit deduction and usage log |
+| 110-120s | Technical proof | Show Technical Review / GitHub links |
+
+## Chinese subtitle script
+
+SmartDocs AI 是一个生产风格的企业级 RAG SaaS Demo。
+
+它支持团队上传内部文档，并通过带来源引用的 AI 问答快速获取可信答案。
+
+系统包含多租户 workspace、RBAC 权限、文档解析、混合检索、LangGraph RAG 流程、积分扣费和用量日志。
+
+公开演示环境可能使用 demo-local 模式，以保证稳定和成本可控。
+
+配置 DeepSeek、Qwen 或 OpenAI-compatible API key 后，可以切换到真实模型调用。

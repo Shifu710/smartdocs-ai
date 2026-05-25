@@ -7,6 +7,13 @@
 ![LangGraph](https://img.shields.io/badge/LangGraph-RAG-purple)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 
+- **Live Demo:** https://smartdocs-ai-three.vercel.app/
+- **Technical Review:** https://smartdocs-ai-three.vercel.app/technical-review
+- **中文文档:** [README.zh-CN.md](README.zh-CN.md)
+- **China Contact:** WeChat `mgamal012`
+- **Email:** `mohamed.gamalj8@gmail.com`
+- **GitHub:** https://github.com/Shifu710
+
 SmartDocs AI is a production-style Enterprise RAG SaaS demo built to demonstrate AI Native Full-Stack engineering: a customer-facing product website, document upload, hybrid retrieval, cited RAG chat, workspace RBAC, credit billing, usage logs, LangGraph orchestration, and provider abstraction for DeepSeek/Qwen/OpenAI-compatible APIs.
 
 The public demo can run in `demo-local` mode for stability and cost control. Real provider integrations are available when API keys are configured.
@@ -14,6 +21,9 @@ The public demo can run in `demo-local` mode for stability and cost control. Rea
 - Live demo: https://smartdocs-ai-three.vercel.app/
 - Technical review: https://smartdocs-ai-three.vercel.app/technical-review
 - Repository: https://github.com/Shifu710/smartdocs-ai
+- China-market contact: WeChat `mgamal012`
+- Email: `mohamed.gamalj8@gmail.com`
+- GitHub profile: https://github.com/Shifu710
 
 ## Public Product Website
 
@@ -97,20 +107,27 @@ Screenshots are stored under `docs/assets/`. The screenshot capture plan is docu
 
 ## Demo Video
 
-A short 60-120 second walkthrough will be added here after final recording.
+A 60-120 second live walkthrough will be added after final screen recording.
 
 Planned flow:
 
 1. Open the product homepage.
 2. Click **Try live demo**.
 3. Enter the guest demo workspace.
-4. Open **Documents** and review indexed files.
+4. Open **Documents** and show indexed files.
 5. Open **Chat** and ask: `What is the refund policy?`
-6. Inspect cited answer and Retrieval Debug Panel.
-7. Open **Usage** and verify credit deduction and usage logs.
-8. Open **Technical Review**.
+6. Show the cited answer and Retrieval Debug Panel.
+7. Open **Usage** and show credit deduction / usage log.
+8. Open **Technical Review** and GitHub.
 
-> The video should show the live deployed app and should not hide `demo-local` provider mode if it appears in the UI.
+Recommended format:
+
+- English narration
+- Chinese subtitles
+- Show `demo-local` provider mode honestly if it appears
+- Do not hide provider labels, usage logs, or demo limitations
+
+> No video link is included until a real recording exists.
 
 ## Architecture Diagram
 
@@ -145,6 +162,20 @@ When configured with API keys, the same ModelGateway supports:
 - OpenAI-compatible chat models
 
 When configured with Qwen embedding credentials, the EmbeddingGateway can use Qwen embeddings. Otherwise, deterministic demo embeddings keep the public demo testable.
+
+## Live Demo Verification
+
+The public demo is checked through:
+
+- marketing route smoke checks
+- backend health route checks
+- guest demo manual QA checklist
+- document/chat/usage flow checklist
+- frontend type-check, lint, and production build
+
+Latest checklist:
+
+- [Live demo QA checklist](docs/live-demo-qa-checklist.md)
 
 ## Local Setup
 
@@ -231,8 +262,17 @@ uvicorn app.main:app --reload
 - Live demo QA checklist: [docs/live-demo-qa-checklist.md](docs/live-demo-qa-checklist.md)
 - Reviewer guide: [docs/reviewer-guide.md](docs/reviewer-guide.md)
 - Demo video plan: [docs/demo-video-plan.md](docs/demo-video-plan.md)
+- Demo video script: [docs/demo-video-script.md](docs/demo-video-script.md)
 - Roadmap: [ROADMAP.md](ROADMAP.md)
 - Latest production URL: https://smartdocs-ai-three.vercel.app/
+
+## GitHub Pinned Description
+
+SmartDocs AI · Enterprise RAG SaaS Demo · Next.js + FastAPI + pgvector
+
+Multi-tenant workspaces, RBAC, hybrid retrieval (vector + keyword + RRF), streaming cited answers, atomic credit billing, and a DeepSeek/Qwen/OpenAI-compatible model gateway.
+
+Live demo · Technical review · 中文文档 · GitHub
 
 ## Chinese Summary
 

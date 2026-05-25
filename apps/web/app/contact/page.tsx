@@ -1,4 +1,4 @@
-import { Github, Mail, MessageSquareText } from "lucide-react";
+import { Github, Mail, MessageCircle, MessageSquareText } from "lucide-react";
 import Link from "next/link";
 
 import { MarketingShell, PageIntro } from "@/components/marketing-shell";
@@ -12,15 +12,25 @@ export default function ContactPage() {
         description="This page keeps contact paths honest: no fake sales form, no simulated booking flow, and no placeholder payment journey."
       />
 
-      <section className="mx-auto grid max-w-6xl gap-6 px-4 py-12 md:grid-cols-3">
+      <section className="mx-auto grid max-w-6xl gap-6 px-4 py-12 md:grid-cols-4">
+        <div className="rounded-md border border-border bg-card p-6">
+          <MessageCircle className="h-6 w-6 text-primary" aria-hidden="true" />
+          <h2 className="mt-4 text-xl font-semibold">China-market contact</h2>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">WeChat: mgamal012</p>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">
+            中国区联系：微信 mgamal012。适用于 HR 沟通、技术评审、项目合作或面试交流。
+          </p>
+        </div>
         <a href="mailto:mohamed.gamalj8@gmail.com" className="rounded-md border border-border bg-card p-6 hover:border-primary/50">
           <Mail className="h-6 w-6 text-primary" aria-hidden="true" />
           <h2 className="mt-4 text-xl font-semibold">Email</h2>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">mohamed.gamalj8@gmail.com</p>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">Reach out about the SmartDocs AI portfolio project.</p>
         </a>
-        <a href="https://github.com/Shifu710/smartdocs-ai" className="rounded-md border border-border bg-card p-6 hover:border-primary/50">
+        <a href="https://github.com/Shifu710" className="rounded-md border border-border bg-card p-6 hover:border-primary/50">
           <Github className="h-6 w-6 text-primary" aria-hidden="true" />
           <h2 className="mt-4 text-xl font-semibold">GitHub</h2>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">github.com/Shifu710</p>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">Review the repository, documentation, and issue history.</p>
         </a>
         <Link href="/technical-review" className="rounded-md border border-border bg-card p-6 hover:border-primary/50">

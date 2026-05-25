@@ -2,6 +2,13 @@
 
 Use this checklist before sending SmartDocs AI to HR or technical reviewers.
 
+## Last manual verification
+
+- Date: 2026-05-26
+- Verified by: Mohamed Gamal
+- Browser: Chrome
+- Result: pending
+
 ## Public routes
 
 - [ ] `/` opens product homepage
@@ -45,3 +52,5 @@ Use this checklist before sending SmartDocs AI to HR or technical reviewers.
 ## Notes
 
 The public demo may run in `demo-local` provider mode for stability and cost control. This is acceptable as long as it is clearly labeled.
+
+Do not mark the manual result as passed until the full guest demo flow has been completed against the live deployment.
