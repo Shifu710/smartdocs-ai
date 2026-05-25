@@ -7,7 +7,7 @@
 ![LangGraph](https://img.shields.io/badge/LangGraph-RAG-purple)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 
-SmartDocs AI is a production-style Enterprise RAG SaaS demo built to demonstrate AI Native Full-Stack engineering: document upload, hybrid retrieval, cited RAG chat, workspace RBAC, credit billing, usage logs, LangGraph orchestration, and provider abstraction for DeepSeek/Qwen/OpenAI-compatible APIs.
+SmartDocs AI is a production-style Enterprise RAG SaaS demo built to demonstrate AI Native Full-Stack engineering: a customer-facing product website, document upload, hybrid retrieval, cited RAG chat, workspace RBAC, credit billing, usage logs, LangGraph orchestration, and provider abstraction for DeepSeek/Qwen/OpenAI-compatible APIs.
 
 The public demo can run in `demo-local` mode for stability and cost control. Real provider integrations are available when API keys are configured.
 
@@ -15,14 +15,27 @@ The public demo can run in `demo-local` mode for stability and cost control. Rea
 - Technical review: https://smartdocs-ai-three.vercel.app/technical-review
 - Repository: https://github.com/Shifu710/smartdocs-ai
 
+## Public Product Website
+
+The public frontend now presents SmartDocs AI as a customer-facing product website first, while keeping HR and technical reviewer material available through secondary links.
+
+- Product homepage: https://smartdocs-ai-three.vercel.app/
+- Features: https://smartdocs-ai-three.vercel.app/features
+- Use cases: https://smartdocs-ai-three.vercel.app/use-cases
+- Pricing / evaluation scope: https://smartdocs-ai-three.vercel.app/pricing
+- Security overview: https://smartdocs-ai-three.vercel.app/security
+- Contact / reviewer paths: https://smartdocs-ai-three.vercel.app/contact
+
+The marketing pages avoid fake customers, fake testimonials, fake logos, and fake payment links. The pricing page is intentionally evaluation-focused because commercial checkout and subscription packaging are not implemented in the public demo.
+
 ## For HR / Technical Reviewers
 
 This project was created as a flagship AI Native Full-Stack portfolio project. It is designed to show practical AI SaaS product delivery beyond a simple chatbot.
 
 ### Recommended 5-minute review path
 
-1. Open the live demo.
-2. Click **Try Guest Demo**.
+1. Open the live product website.
+2. Click **Try live demo**.
 3. Enter the seeded SmartDocs Demo Workspace.
 4. Open **Documents** and confirm indexed demo files.
 5. Open **Chat** and ask: `What is the refund policy?`
@@ -40,7 +53,7 @@ This project was created as a flagship AI Native Full-Stack portfolio project. I
 
 ## Core Features
 
-- Next.js App Router frontend with a reviewer-friendly product UI
+- Next.js App Router frontend with customer-facing marketing pages and reviewer-friendly technical routes
 - FastAPI backend with async SQLAlchemy, Alembic, and layered service/repository structure
 - JWT authentication and guest demo login
 - Multi-tenant workspaces with workspace RBAC
