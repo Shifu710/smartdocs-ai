@@ -6,9 +6,11 @@ import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { AppShell } from "@/components/app-shell";
+import { ListSkeleton, TableSkeleton } from "@/components/loading-states";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getAccessToken, getWorkspaceDashboard } from "@/lib/api";
+import { getAccessToken } from "@/lib/api";
+import { workspaceDashboardQuery } from "@/lib/queries";
 
 const members = [
   { name: "Demo Owner", email: "demo@smartdocs.ai", role: "owner" },
@@ -37,8 +39,7 @@ export default function MembersPage() {
   }, [router]);
 
   const dashboardQuery = useQuery({
-    queryKey: ["workspace-dashboard", workspaceId],
-    queryFn: () => getWorkspaceDashboard(workspaceId),
+    ...workspaceDashboardQuery(workspaceId),
     enabled: Boolean(workspaceId) && Boolean(getAccessToken())
   });
 
@@ -48,6 +49,13 @@ export default function MembersPage() {
   return (
     <AppShell title="Members" workspaceId={workspaceId}>
       <div className="grid gap-5">
+        {dashboardQuery.isLoading ? (
+          <>
+            <ListSkeleton rows={3} />
+            <TableSkeleton rows={4} columns={5} />
+          </>
+        ) : null}
+
         <section className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 className="flex items-center gap-2 text-xl font-semibold">

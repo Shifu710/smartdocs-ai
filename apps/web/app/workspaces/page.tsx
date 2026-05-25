@@ -11,11 +11,13 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { AppShell } from "@/components/app-shell";
 import { CreditBadge } from "@/components/credit-badge";
+import { ListSkeleton } from "@/components/loading-states";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { createWorkspace, getAccessToken, listWorkspaces } from "@/lib/api";
+import { createWorkspace, getAccessToken } from "@/lib/api";
+import { queryKeys, workspacesQuery as workspacesQueryOptions } from "@/lib/queries";
 
 const workspaceSchema = z.object({
   name: z.string().min(2).max(160)
@@ -39,8 +41,7 @@ export default function WorkspacesPage() {
   }, [router]);
 
   const workspacesQuery = useQuery({
-    queryKey: ["workspaces"],
-    queryFn: listWorkspaces,
+    ...workspacesQueryOptions(),
     enabled: typeof window !== "undefined" && Boolean(getAccessToken())
   });
 
@@ -48,7 +49,7 @@ export default function WorkspacesPage() {
     mutationFn: (values: WorkspaceForm) => createWorkspace(values.name),
     onSuccess: async (workspace) => {
       form.reset();
-      await queryClient.invalidateQueries({ queryKey: ["workspaces"] });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.workspaces });
       router.push(`/workspaces/${workspace.id}/dashboard`);
     },
     onError: (err) => setError(err instanceof Error ? err.message : "Could not create workspace")
@@ -70,7 +71,9 @@ export default function WorkspacesPage() {
 
           {workspacesQuery.isLoading ? (
             <Card>
-              <CardContent className="text-sm text-muted-foreground">Loading workspaces...</CardContent>
+              <CardContent>
+                <ListSkeleton rows={3} />
+              </CardContent>
             </Card>
           ) : null}
 

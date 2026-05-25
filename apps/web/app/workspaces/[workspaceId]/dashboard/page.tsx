@@ -7,9 +7,11 @@ import { useQuery } from "@tanstack/react-query";
 
 import { AppShell } from "@/components/app-shell";
 import { CreditBadge } from "@/components/credit-badge";
+import { MetricGridSkeleton, PagePanelSkeleton } from "@/components/loading-states";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getAccessToken, getWorkspaceDashboard } from "@/lib/api";
+import { getAccessToken } from "@/lib/api";
+import { workspaceDashboardQuery } from "@/lib/queries";
 
 const metricCards = [
   { key: "member_count", label: "Members", icon: Users },
@@ -30,8 +32,7 @@ export default function WorkspaceDashboardPage() {
   }, [router]);
 
   const dashboardQuery = useQuery({
-    queryKey: ["workspace-dashboard", workspaceId],
-    queryFn: () => getWorkspaceDashboard(workspaceId),
+    ...workspaceDashboardQuery(workspaceId),
     enabled: Boolean(workspaceId) && typeof window !== "undefined" && Boolean(getAccessToken())
   });
 
@@ -40,9 +41,17 @@ export default function WorkspaceDashboardPage() {
   return (
     <AppShell title={workspace?.name ?? "Workspace Dashboard"} workspaceId={workspaceId}>
       {dashboardQuery.isLoading ? (
-        <Card>
-          <CardContent className="text-sm text-muted-foreground">Loading dashboard...</CardContent>
-        </Card>
+        <div className="grid gap-6">
+          <section className="flex items-center justify-between gap-3">
+            <div className="grid gap-2">
+              <div className="h-6 w-56 animate-pulse rounded-md bg-muted" />
+              <div className="h-4 w-40 animate-pulse rounded-md bg-muted" />
+            </div>
+            <div className="h-9 w-28 animate-pulse rounded-md bg-muted" />
+          </section>
+          <MetricGridSkeleton />
+          <PagePanelSkeleton />
+        </div>
       ) : null}
 
       {dashboardQuery.error ? (

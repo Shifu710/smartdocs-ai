@@ -7,10 +7,12 @@ import { ChangeEvent, useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { AppShell } from "@/components/app-shell";
+import { ListSkeleton } from "@/components/loading-states";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getAccessToken, getWorkspaceDashboard, listDocuments, uploadDocument } from "@/lib/api";
+import { getAccessToken, uploadDocument } from "@/lib/api";
+import { documentsQuery as documentsQueryOptions, queryKeys, workspaceDashboardQuery } from "@/lib/queries";
 
 export default function DocumentsPage() {
   const params = useParams<{ workspaceId: string }>();
@@ -26,14 +28,12 @@ export default function DocumentsPage() {
   }, [router]);
 
   const documentsQuery = useQuery({
-    queryKey: ["documents", workspaceId],
-    queryFn: () => listDocuments(workspaceId),
+    ...documentsQueryOptions(workspaceId),
     enabled: Boolean(workspaceId) && Boolean(getAccessToken())
   });
 
   const dashboardQuery = useQuery({
-    queryKey: ["workspace-dashboard", workspaceId],
-    queryFn: () => getWorkspaceDashboard(workspaceId),
+    ...workspaceDashboardQuery(workspaceId),
     enabled: Boolean(workspaceId) && Boolean(getAccessToken())
   });
 
@@ -44,7 +44,8 @@ export default function DocumentsPage() {
     mutationFn: (file: File) => uploadDocument(workspaceId, file),
     onSuccess: () => {
       setError(null);
-      queryClient.invalidateQueries({ queryKey: ["documents", workspaceId] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.documents(workspaceId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.workspaceDashboard(workspaceId) });
     },
     onError: (mutationError) => setError(mutationError instanceof Error ? mutationError.message : "Upload failed")
   });
@@ -87,14 +88,14 @@ export default function DocumentsPage() {
               type="button"
               variant="secondary"
               size="sm"
-              onClick={() => queryClient.invalidateQueries({ queryKey: ["documents", workspaceId] })}
+              onClick={() => queryClient.invalidateQueries({ queryKey: queryKeys.documents(workspaceId) })}
             >
               <RefreshCcw className="h-4 w-4" aria-hidden="true" />
               Refresh
             </Button>
           </CardHeader>
           <CardContent className="grid gap-3">
-            {documentsQuery.isLoading ? <p className="text-sm text-muted-foreground">Loading documents...</p> : null}
+            {documentsQuery.isLoading ? <ListSkeleton rows={4} /> : null}
             {documentsQuery.data?.length === 0 ? (
               <p className="text-sm text-muted-foreground">No documents yet. Seed data adds demo documents for guests.</p>
             ) : null}

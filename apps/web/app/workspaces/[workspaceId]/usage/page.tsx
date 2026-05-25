@@ -6,9 +6,11 @@ import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { AppShell } from "@/components/app-shell";
+import { MetricGridSkeleton, TableSkeleton } from "@/components/loading-states";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getAccessToken, getUsage } from "@/lib/api";
+import { getAccessToken } from "@/lib/api";
+import { usageQuery as usageQueryOptions } from "@/lib/queries";
 
 const metrics = [
   { key: "credits", label: "Credits", icon: Coins },
@@ -33,8 +35,7 @@ export default function UsagePage() {
   }, [router]);
 
   const usageQuery = useQuery({
-    queryKey: ["usage", workspaceId],
-    queryFn: () => getUsage(workspaceId),
+    ...usageQueryOptions(workspaceId),
     enabled: Boolean(workspaceId) && Boolean(getAccessToken())
   });
 
@@ -60,6 +61,9 @@ export default function UsagePage() {
   return (
     <AppShell title="Usage" workspaceId={workspaceId}>
       <div className="grid gap-5">
+        {usageQuery.isLoading ? <MetricGridSkeleton /> : null}
+
+        {!usageQuery.isLoading ? (
         <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {metrics.map((metric) => {
             const Icon = metric.icon;
@@ -76,6 +80,7 @@ export default function UsagePage() {
             );
           })}
         </section>
+        ) : null}
 
         <section className="grid gap-4 md:grid-cols-2">
           <Card>
@@ -157,6 +162,13 @@ export default function UsagePage() {
                 </tr>
               </thead>
               <tbody>
+                {usageQuery.isLoading ? (
+                  <tr>
+                    <td colSpan={9} className="py-3">
+                      <TableSkeleton rows={5} columns={6} />
+                    </td>
+                  </tr>
+                ) : null}
                 {filteredLogs.map((log) => (
                   <tr key={log.id} className="border-t border-border">
                     <td className="py-3 text-muted-foreground">{new Date(log.created_at).toLocaleString()}</td>
@@ -193,6 +205,13 @@ export default function UsagePage() {
                 </tr>
               </thead>
               <tbody>
+                {usageQuery.isLoading ? (
+                  <tr>
+                    <td colSpan={5} className="py-3">
+                      <TableSkeleton rows={4} columns={5} />
+                    </td>
+                  </tr>
+                ) : null}
                 {usageQuery.data?.transactions.map((transaction) => (
                   <tr key={transaction.id} className="border-t border-border">
                     <td className="py-3 text-muted-foreground">{new Date(transaction.created_at).toLocaleString()}</td>

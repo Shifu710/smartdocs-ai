@@ -6,9 +6,11 @@ import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { AppShell } from "@/components/app-shell";
+import { PagePanelSkeleton } from "@/components/loading-states";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getAccessToken, getWorkspaceDashboard } from "@/lib/api";
+import { getAccessToken } from "@/lib/api";
+import { workspaceDashboardQuery } from "@/lib/queries";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -22,8 +24,7 @@ export default function SettingsPage() {
   }, [router]);
 
   const dashboardQuery = useQuery({
-    queryKey: ["workspace-dashboard", workspaceId],
-    queryFn: () => getWorkspaceDashboard(workspaceId),
+    ...workspaceDashboardQuery(workspaceId),
     enabled: Boolean(workspaceId) && Boolean(getAccessToken())
   });
 
@@ -34,6 +35,8 @@ export default function SettingsPage() {
   return (
     <AppShell title="Settings" workspaceId={workspaceId}>
       <div className="grid gap-5">
+        {dashboardQuery.isLoading ? <PagePanelSkeleton /> : null}
+
         <section className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 className="flex items-center gap-2 text-xl font-semibold">

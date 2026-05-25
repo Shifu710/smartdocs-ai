@@ -11,10 +11,8 @@ from app.models.user import User
 from app.models.workspace import Workspace, WorkspaceMember
 from app.repositories.document_repository import DocumentRepository
 from app.schemas.document import DocumentChunkRead, DocumentDetail, DocumentRead
-from app.services.document_processing import process_document
 from app.services.workspace_service import assert_workspace_role
 from app.utils.file_storage import save_upload_file
-from app.workers.tasks import process_document_task
 
 
 ALLOWED_TYPES = {"pdf", "docx", "txt", "md"}
@@ -75,8 +73,12 @@ class DocumentService:
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="This document already exists") from exc
 
         try:
+            from app.workers.tasks import process_document_task
+
             process_document_task.delay(document.id)
         except Exception:
+            from app.services.document_processing import process_document
+
             await process_document(self.session, document.id)
 
         await self.session.refresh(document)
@@ -115,8 +117,12 @@ class DocumentService:
         if not document or document.status == "deleted":
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
         try:
+            from app.workers.tasks import process_document_task
+
             process_document_task.delay(document.id)
         except Exception:
+            from app.services.document_processing import process_document
+
             await process_document(self.session, document.id)
         await self.session.refresh(document)
         return DocumentRead.model_validate(document)

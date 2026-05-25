@@ -10,7 +10,9 @@ export function Providers({ children }: { children: ReactNode }) {
         defaultOptions: {
           queries: {
             refetchOnWindowFocus: false,
-            staleTime: 30_000
+            refetchOnMount: false,
+            staleTime: 60_000,
+            gcTime: 5 * 60_000
           }
         }
       })

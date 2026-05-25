@@ -1,9 +1,6 @@
 from datetime import UTC, datetime
 from pathlib import Path
 
-from docx import Document as DocxDocument
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from pypdf import PdfReader
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.ai.embedding_gateway import EmbeddingGateway
@@ -16,9 +13,13 @@ from app.utils.tokens import estimate_tokens
 def extract_text(path: str, file_type: str) -> list[tuple[str, int | None]]:
     file_path = Path(path)
     if file_type == "pdf":
+        from pypdf import PdfReader
+
         reader = PdfReader(str(file_path))
         return [(page.extract_text() or "", index + 1) for index, page in enumerate(reader.pages)]
     if file_type == "docx":
+        from docx import Document as DocxDocument
+
         doc = DocxDocument(str(file_path))
         paragraphs = [paragraph.text for paragraph in doc.paragraphs if paragraph.text.strip()]
         return [("\n".join(paragraphs), None)]
@@ -28,6 +29,8 @@ def extract_text(path: str, file_type: str) -> list[tuple[str, int | None]]:
 
 
 def build_chunks(document: Document, pages: list[tuple[str, int | None]]) -> list[DocumentChunk]:
+    from langchain.text_splitter import RecursiveCharacterTextSplitter
+
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=680,
         chunk_overlap=85,
@@ -55,6 +58,8 @@ def build_chunks(document: Document, pages: list[tuple[str, int | None]]) -> lis
 
 
 async def build_chunks_with_embeddings(document: Document, pages: list[tuple[str, int | None]]) -> list[DocumentChunk]:
+    from langchain.text_splitter import RecursiveCharacterTextSplitter
+
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=680,
         chunk_overlap=85,

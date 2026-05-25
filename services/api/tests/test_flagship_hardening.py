@@ -179,7 +179,7 @@ async def test_guest_cannot_upload_document(session, seeded_workspace):
 async def test_owner_can_upload_document(session, seeded_workspace, monkeypatch, tmp_path):
     workspace, owner, owner_member, _guest, _guest_member = seeded_workspace
     monkeypatch.setattr("app.core.config.settings.upload_dir", str(tmp_path))
-    monkeypatch.setattr("app.services.document_service.process_document_task.delay", lambda document_id: None)
+    monkeypatch.setattr("app.workers.tasks.process_document_task.delay", lambda document_id: None)
 
     result = await DocumentService(session).upload_document(
         workspace=workspace,

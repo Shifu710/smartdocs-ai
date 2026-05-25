@@ -6,18 +6,23 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { AppShell } from "@/components/app-shell";
+import { ListSkeleton } from "@/components/loading-states";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   createConversation,
   getAccessToken,
-  listConversationMessages,
-  listConversations,
-  listDocuments,
   streamChat,
   type ChatFinal
 } from "@/lib/api";
+import {
+  conversationMessagesQuery,
+  conversationsQuery as conversationsQueryOptions,
+  documentsQuery as documentsQueryOptions,
+  queryKeys
+} from "@/lib/queries";
 
 const suggestions = [
   "What is the refund policy?",
@@ -47,20 +52,17 @@ export default function ChatPage() {
   }, [router]);
 
   const documentsQuery = useQuery({
-    queryKey: ["documents", workspaceId],
-    queryFn: () => listDocuments(workspaceId),
+    ...documentsQueryOptions(workspaceId),
     enabled: Boolean(workspaceId) && Boolean(getAccessToken())
   });
 
   const conversationsQuery = useQuery({
-    queryKey: ["conversations", workspaceId],
-    queryFn: () => listConversations(workspaceId),
+    ...conversationsQueryOptions(workspaceId),
     enabled: Boolean(workspaceId) && Boolean(getAccessToken())
   });
 
   const messagesQuery = useQuery({
-    queryKey: ["conversation-messages", workspaceId, conversationId],
-    queryFn: () => listConversationMessages(workspaceId, conversationId as string),
+    ...conversationMessagesQuery(workspaceId, conversationId as string),
     enabled: Boolean(workspaceId) && Boolean(conversationId) && Boolean(getAccessToken())
   });
 
@@ -91,10 +93,10 @@ export default function ChatPage() {
       });
       setFinal(result);
       setConversationId(result.conversation_id);
-      queryClient.invalidateQueries({ queryKey: ["workspace-dashboard", workspaceId] });
-      queryClient.invalidateQueries({ queryKey: ["usage", workspaceId] });
-      queryClient.invalidateQueries({ queryKey: ["conversations", workspaceId] });
-      queryClient.invalidateQueries({ queryKey: ["conversation-messages", workspaceId, result.conversation_id] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.workspaceDashboard(workspaceId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.usage(workspaceId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.conversations(workspaceId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.conversationMessages(workspaceId, result.conversation_id) });
     } catch (streamError) {
       setError(streamError instanceof Error ? streamError.message : "Chat failed");
     } finally {
@@ -107,7 +109,7 @@ export default function ChatPage() {
     setConversationId(conversation.id);
     setAnswer("");
     setFinal(null);
-    queryClient.invalidateQueries({ queryKey: ["conversations", workspaceId] });
+    queryClient.invalidateQueries({ queryKey: queryKeys.conversations(workspaceId) });
   }
 
   return (
@@ -123,6 +125,7 @@ export default function ChatPage() {
                 <MessageSquarePlus className="h-4 w-4" aria-hidden="true" />
                 New chat
               </Button>
+              {conversationsQuery.isLoading ? <ListSkeleton rows={3} /> : null}
               {(conversationsQuery.data ?? []).map((conversation) => (
                 <button
                   key={conversation.id}
@@ -150,6 +153,7 @@ export default function ChatPage() {
               <CardTitle className="text-base">Document filter</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-2">
+              {documentsQuery.isLoading ? <ListSkeleton rows={4} /> : null}
               {indexedDocuments.map((document) => (
                 <label key={document.id} className="flex items-start gap-2 rounded-md border border-border p-3 text-sm">
                   <input
@@ -181,6 +185,13 @@ export default function ChatPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4">
+              {documentsQuery.isLoading ? (
+                <div className="grid gap-3">
+                  <Skeleton className="h-8 w-full" />
+                  <Skeleton className="h-28 w-full" />
+                  <Skeleton className="h-10 w-28" />
+                </div>
+              ) : null}
               <div className="flex flex-wrap gap-2">
                 {suggestions.map((suggestion) => (
                   <button

@@ -7,10 +7,12 @@ import { useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { AppShell } from "@/components/app-shell";
+import { ListSkeleton } from "@/components/loading-states";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getAccessToken, getDocument, getWorkspaceDashboard, reindexDocument } from "@/lib/api";
+import { getAccessToken, getDocument, reindexDocument } from "@/lib/api";
+import { queryKeys, workspaceDashboardQuery } from "@/lib/queries";
 
 export default function DocumentDetailPage() {
   const params = useParams<{ workspaceId: string; documentId: string }>();
@@ -31,14 +33,17 @@ export default function DocumentDetailPage() {
   });
 
   const dashboardQuery = useQuery({
-    queryKey: ["workspace-dashboard", workspaceId],
-    queryFn: () => getWorkspaceDashboard(workspaceId),
+    ...workspaceDashboardQuery(workspaceId),
     enabled: Boolean(workspaceId) && Boolean(getAccessToken())
   });
 
   const reindexMutation = useMutation({
     mutationFn: () => reindexDocument(workspaceId, documentId),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["document", workspaceId, documentId] })
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["document", workspaceId, documentId] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.documents(workspaceId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.workspaceDashboard(workspaceId) });
+    }
   });
 
   const document = documentQuery.data;
@@ -102,7 +107,9 @@ export default function DocumentDetailPage() {
           </>
         ) : (
           <Card>
-            <CardContent className="text-sm text-muted-foreground">Loading document...</CardContent>
+            <CardContent>
+              <ListSkeleton rows={4} />
+            </CardContent>
           </Card>
         )}
       </div>
