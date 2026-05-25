@@ -98,6 +98,44 @@ export default function HomePage() {
       </section>
 
       <section className="border-y border-border bg-card">
+        <div className="mx-auto grid max-w-6xl gap-6 px-4 py-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-center">
+          <div>
+            <Badge tone="muted">China-market signal</Badge>
+            <h2 className="mt-4 text-3xl font-semibold">中文简介</h2>
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">
+              Built for China-market AI SaaS and 大模型应用开发 roles, while keeping the public demo honest and cost-safe.
+            </p>
+          </div>
+          <div>
+            <p className="text-base leading-8 text-foreground">
+              SmartDocs AI 是一个面向团队的安全文档智能平台，支持文档上传、引用来源问答、工作空间权限、积分扣费和用量日志。公开演示环境可能使用
+              demo-local 模式以保证稳定和成本可控；配置 DeepSeek / Qwen / OpenAI-compatible 密钥后可接入真实模型。
+            </p>
+            <div className="mt-5 flex flex-wrap gap-3">
+              <Link
+                href="/technical-review"
+                className="inline-flex h-9 items-center justify-center rounded-md border border-border bg-background px-3 text-sm font-medium hover:bg-muted"
+              >
+                Open technical review
+              </Link>
+              <a
+                href="https://github.com/Shifu710/smartdocs-ai"
+                className="inline-flex h-9 items-center justify-center rounded-md border border-border bg-background px-3 text-sm font-medium hover:bg-muted"
+              >
+                View GitHub
+              </a>
+              <a
+                href="https://github.com/Shifu710/smartdocs-ai/blob/master/README.zh-CN.md"
+                className="inline-flex h-9 items-center justify-center rounded-md border border-border bg-background px-3 text-sm font-medium hover:bg-muted"
+              >
+                Read README.zh-CN
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-y border-border bg-card">
         <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
           <div>
             <Badge tone="muted">Product workflow</Badge>

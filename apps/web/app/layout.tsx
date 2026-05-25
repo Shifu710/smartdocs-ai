@@ -7,8 +7,9 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "SmartDocs AI",
-  description: "Enterprise RAG SaaS for secure document intelligence"
+  title: "SmartDocs AI - Secure Document Intelligence for Teams",
+  description:
+    "Upload company documents, ask questions, and get cited AI answers with workspace permissions, credits, usage logs, and transparent provider mode."
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

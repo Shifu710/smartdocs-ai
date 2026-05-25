@@ -59,14 +59,14 @@ This project was created as a flagship AI Native Full-Stack portfolio project. I
 - Multi-tenant workspaces with workspace RBAC
 - Document upload for PDF, DOCX, TXT, and Markdown
 - Document extraction, chunking, embeddings, and indexing
-- PostgreSQL + pgvector-style vector retrieval
+- PostgreSQL + pgvector retrieval with Qwen-ready embeddings and demo-local fallback
 - Hybrid retrieval: vector search + keyword search + Reciprocal Rank Fusion
 - LangGraph RAG flow with access checks, credit checks, retrieval, generation, and finalize steps
 - Streaming chat with source citations and Retrieval Debug Panel data
 - Dedicated conversations/messages tables for chat history
 - Credits, usage logs, credit transactions, and zero-credit failed-call handling
 - ModelGateway: DeepSeek, Qwen, OpenAI-compatible, and demo-local fallback
-- EmbeddingGateway: Qwen embeddings or deterministic demo-local embeddings
+- EmbeddingGateway: Qwen embeddings when configured, or deterministic local demo embeddings for the public no-key demo
 - Langfuse-ready observability when keys are configured
 - Docker Compose local stack and GitHub Actions CI
 
@@ -94,6 +94,23 @@ Screenshots are stored under `docs/assets/`. The screenshot capture plan is docu
 
 ### Technical Review Page
 ![Technical Review](docs/assets/technical-review.png)
+
+## Demo Video
+
+A short 60-120 second walkthrough will be added here after final recording.
+
+Planned flow:
+
+1. Open the product homepage.
+2. Click **Try live demo**.
+3. Enter the guest demo workspace.
+4. Open **Documents** and review indexed files.
+5. Open **Chat** and ask: `What is the refund policy?`
+6. Inspect cited answer and Retrieval Debug Panel.
+7. Open **Usage** and verify credit deduction and usage logs.
+8. Open **Technical Review**.
+
+> The video should show the live deployed app and should not hide `demo-local` provider mode if it appears in the UI.
 
 ## Architecture Diagram
 
@@ -211,7 +228,10 @@ uvicorn app.main:app --reload
 
 - Flagship checklist: [docs/flagship-readiness-checklist.md](docs/flagship-readiness-checklist.md)
 - Production QA: [docs/production-qa.md](docs/production-qa.md)
+- Live demo QA checklist: [docs/live-demo-qa-checklist.md](docs/live-demo-qa-checklist.md)
 - Reviewer guide: [docs/reviewer-guide.md](docs/reviewer-guide.md)
+- Demo video plan: [docs/demo-video-plan.md](docs/demo-video-plan.md)
+- Roadmap: [ROADMAP.md](ROADMAP.md)
 - Latest production URL: https://smartdocs-ai-three.vercel.app/
 
 ## Chinese Summary
